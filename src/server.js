@@ -9,6 +9,7 @@ import remesas from './routes/remesas.routes.js'
 import correo from './routes/correo.routes.js'
 import dotenv from 'dotenv';
 dotenv.config();
+import dns from 'dns';
 
 
 
@@ -40,8 +41,9 @@ app.use(
 app.use(clientes)
 
 app.get('/', (req,res)=>{
-  var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  res.send('Tu dirección IP es: ' + ip);
+  dns.lookup(require('os').hostname(), function (err, address, family) {
+    console.log(`La dirección IP del host es ${address}`);
+  });
   res.send('Welcome to my Apy!')
 })
 
