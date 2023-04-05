@@ -40,6 +40,8 @@ app.use(
 app.use(clientes)
 
 app.get('/', (req,res)=>{
+  var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  res.send('Tu dirección IP es: ' + ip);
   res.send('Welcome to my Apy!')
 })
 
