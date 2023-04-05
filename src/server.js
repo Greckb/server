@@ -10,6 +10,7 @@ import correo from './routes/correo.routes.js'
 import dotenv from 'dotenv';
 dotenv.config();
 import dns from 'dns';
+import os from 'os';
 
 
 
@@ -41,7 +42,7 @@ app.use(
 app.use(clientes)
 
 app.get('/', (req,res)=>{
-  dns.lookup(require('os').hostname(), function (err, address, family) {
+  dns.lookup(os.hostname(), function (err, address, family) {
     console.log(`La dirección IP del host es ${address}`);
   });
   res.send('Welcome to my Apy!')
