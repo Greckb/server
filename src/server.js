@@ -31,12 +31,17 @@ app.use(
 
 (async function() {
   try {
-    await pool.getConnection();
-    // console.log('Connected to database');
+    const connection = await pool.getConnection();
+    const result = await connection.query('SELECT * FROM ADMINISTRADORES');
+  
+    // console.log(`Connected to database ${JSON.stringify(result[0])}`);
+    connection.release();
   } catch (error) {
-    // console.error('Error connecting to database:', error);
+    console.error('Error connecting to database:', error);
   }
 })();
+
+
 
 //Traer todas las funciones de Clientes
 app.use(clientes)

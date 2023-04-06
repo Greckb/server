@@ -26,6 +26,7 @@ router.get('/usuarios/:id', async (req, res) => {
     try {
         // Obtener el valor del parámetro "id"
         const clientId = req.params.id;
+       
 
         // Ejecutar la consulta y devolver los resultados
         const query = 'SELECT * FROM CLIENTES WHERE Idcliente = ?';
