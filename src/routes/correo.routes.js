@@ -36,7 +36,7 @@ function openInbox(cb) {
 //   }
 
 //Fetch a solo los mails de entrada
-async function fetchEmails() {
+async function fetchAllEmails() {
     return new Promise((resolve, reject) => {
         imap.once('ready', function () {
             openInbox(function (err, box) {

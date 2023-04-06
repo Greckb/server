@@ -8,4 +8,3 @@ export const pool  = createPool({
     database: 'zftuyhpu_gimnasio',
     })
     
-    
