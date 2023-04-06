@@ -3,12 +3,14 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const pool = createPool({
-  host: process.env.host_db,
-  user: process.env.user_db,
-  password: process.env.password_db,
-  port: process.env.port_db,
-  database: process.env.database,
+  host: '178.211.133.14',
+  user: 'zftuyhpu_juanjo',
+  password: 'Surf&Roll1',
+  port: 3306,
+  database: 'zftuyhpu_juanjo',
 });
+
+
 
     
     
