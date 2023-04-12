@@ -2,9 +2,9 @@ import { Router } from "express";
 import { pool } from '../db.js'
 import fs from "fs";
 import { fileURLToPath } from 'url';
+import path from "path";
 import { fileupload, processImage } from '../middleware/fileupload.js'
 import { generatePdfMiddleware } from '../middleware/documento.js'
-import path from "path";
 
 const router = Router()
 const __filename = fileURLToPath(import.meta.url);

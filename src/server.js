@@ -8,7 +8,30 @@ import login from './routes/login.routes.js'
 import remesas from './routes/remesas.routes.js'
 import correo from './routes/correo.routes.js'
 import https from 'https';
-import fs from 'fs';
+import fs  from 'fs';
+import { writeFileSync } from 'fs';
+import crypto from 'crypto'
+import { fileURLToPath } from 'url';
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const certKey = crypto.randomBytes(1024).toString('hex')
+const certKeyFormatted = certKey.match(/.{1,64}/g).join("\n")
+const certContents =
+    '-----BEGIN CERTIFICATE-----' + "\n" +
+    certKeyFormatted + "\n" +
+    '-----END CERTIFICATE-----'
+
+
+const filePath = 'signingKey.pem'
+
+writeFileSync(
+  filePath,
+  certContents,
+  { encoding: 'utf8' }
+);
 
 
 
@@ -21,7 +44,7 @@ app.use(
   cors({
     allowedHeaders: ["authorization", "Content-Type"], // you can change the headers
     exposedHeaders: ["authorization"], // you can change the headers
-    origin: "*",
+    origin: "https://prueba-esi.vercel.app/",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     preflightContinue: false
   })
@@ -52,8 +75,8 @@ const port = process.env.PORT || 8080;
 
 // Opciones para el servidor HTTPS
 const options = {
-  key: fs.readFileSync('../key.pem'),
-  cert: fs.readFileSync('../csr.pem')
+  key: fs.readFileSync(`${__dirname}/../key.pem`),
+  cert: fs.readFileSync(`${__dirname}/../cert.pem`)
 };
 
 // Crear servidor HTTPS
