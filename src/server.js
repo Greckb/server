@@ -18,7 +18,7 @@ app.use(
   cors({
     allowedHeaders: ["authorization", "Content-Type"], // you can change the headers
     exposedHeaders: ["authorization"], // you can change the headers
-    origin: "https://prueba-esi.vercel.app",
+    origin: "*",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     preflightContinue: false
   })
@@ -45,5 +45,5 @@ app.use(login)
 
 app.use(correo)
 
-const port = process.env.PORT || 443;
+const port = process.env.PORT || 8080;
 app.listen(port, () => console.log(`Listening on port ${port}..`));
