@@ -52,8 +52,7 @@ router.put('/usuarios/:id', fileupload, async (req, res, next) => {
 }, async (req, res) => {
     const clientId = req.params.id;
     const data = JSON.parse(req.body.data);
-    const { Calle, Ciudad, Fechafreeze, CodigoPostal, Cuota, Dni, Fechanacimiento, IBAN, Nombre, Numero, Plan, Prefijo, Telefono, Email, Fechaalta, Cuotamensual, Categoria, Piso, Observaciones, checkbox, Estado, BIC, role, password, comercial, proteccion } = data;
-
+    const { Calle, Ciudad, Fechafreeze, CodigoPostal, Cuota, Dni, Fechanacimiento, IBAN, Nombre, Numero, Plan, Prefijo, Telefono, Email, Fechaalta, Cuotamensual, Piso, Observaciones, checkbox, Estado, BIC, role, password, comercial, proteccion } = data;
 
     try {
         // Obtener los datos del cliente de la base de datos
