@@ -17,21 +17,21 @@ import path from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// const certKey = crypto.randomBytes(1024).toString('hex')
-// const certKeyFormatted = certKey.match(/.{1,64}/g).join("\n")
-// const certContents =
-//     '-----BEGIN CERTIFICATE-----' + "\n" +
-//     certKeyFormatted + "\n" +
-//     '-----END CERTIFICATE-----'
+const certKey = crypto.randomBytes(1024).toString('hex')
+const certKeyFormatted = certKey.match(/.{1,64}/g).join("\n")
+const certContents =
+    '-----BEGIN CERTIFICATE-----' + "\n" +
+    certKeyFormatted + "\n" +
+    '-----END CERTIFICATE-----'
 
 
-// const filePath = 'signingKey.pem'
+const filePath = 'signingKey.pem'
 
-// writeFileSync(
-//   filePath,
-//   certContents,
-//   { encoding: 'utf8' }
-// );
+writeFileSync(
+  filePath,
+  certContents,
+  { encoding: 'utf8' }
+);
 
 
 
@@ -44,7 +44,7 @@ app.use(
   cors({
     allowedHeaders: ["authorization", "Content-Type"], // you can change the headers
     exposedHeaders: ["authorization"], // you can change the headers
-    origin: "https://prueba-esi.vercel.app",
+    origin: "*",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     preflightContinue: false
   })
