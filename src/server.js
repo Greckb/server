@@ -82,9 +82,4 @@ https.createServer(options, app).listen(port, () => {
   console.log(`Servidor HTTPS iniciado en el puerto ${port}`);
 });
 
-// Middleware para obtener la dirección IP del cliente en una solicitud HTTP
-app.use((req, res, next) => {
-  const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  console.log(`La dirección IP del cliente es: ${ipAddress}`);
-  next();
-});
+
