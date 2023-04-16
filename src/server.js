@@ -13,6 +13,7 @@ import { writeFileSync } from 'fs';
 import crypto from 'crypto'
 import { fileURLToPath } from 'url';
 import path from "path";
+import http from 'http';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -82,4 +83,11 @@ const options = {
 // Crear servidor HTTPS
 https.createServer(options, app).listen(port, () => {
   console.log(`Escuchando el puerto... ${port}..`);
+});
+
+http.get('http://bot.whatismyipaddress.com', function(res){
+    res.setEncoding('utf8');
+    res.on('data', function(chunk){
+        console.log(`IP del servidor: ${chunk}`);
+    });
 });
