@@ -1,40 +1,37 @@
-import express from 'express'
-import cors from 'cors'
+import express from 'express';
+import cors from 'cors';
 import bodyParser from 'body-parser';
-import { pool } from './db.js'
-import clientes from './routes/clientes.routes.js'
-import datos from './routes/datos.routes.js'
-import login from './routes/login.routes.js'
-import remesas from './routes/remesas.routes.js'
-import correo from './routes/correo.routes.js'
+import { pool } from './db.js';
+import clientes from './routes/clientes.routes.js';
+import datos from './routes/datos.routes.js';
+import login from './routes/login.routes.js';
+import remesas from './routes/remesas.routes.js';
+import correo from './routes/correo.routes.js';
 import https from 'https';
-import fs  from 'fs';
+import fs from 'fs';
 import { writeFileSync } from 'fs';
-import crypto from 'crypto'
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
-import path from "path";
-import http from 'http';
+import path from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const certKey = crypto.randomBytes(1024).toString('hex')
-const certKeyFormatted = certKey.match(/.{1,64}/g).join("\n")
+const certKey = crypto.randomBytes(1024).toString('hex');
+const certKeyFormatted = certKey.match(/.{1,64}/g).join('\n');
 const certContents =
-    '-----BEGIN CERTIFICATE-----' + "\n" +
-    certKeyFormatted + "\n" +
-    '-----END CERTIFICATE-----'
+    '-----BEGIN CERTIFICATE-----' + '\n' +
+    certKeyFormatted + '\n' +
+    '-----END CERTIFICATE-----';
 
 
-const filePath = 'signingKey.pem'
+const filePath = 'signingKey.pem';
 
 writeFileSync(
   filePath,
   certContents,
   { encoding: 'utf8' }
 );
-
-
 
 const app = express();
 
@@ -82,12 +79,12 @@ const options = {
 
 // Crear servidor HTTPS
 https.createServer(options, app).listen(port, () => {
-  console.log(`Escuchando el puerto... ${port}..`);
+  console.log(`Servidor HTTPS iniciado en el puerto ${port}`);
 });
 
-http.get('http://bot.whatismyipaddress.com', function(res){
-    res.setEncoding('utf8');
-    res.on('data', function(chunk){
-        console.log(`IP del servidor: ${chunk}`);
-    });
+// Middleware para obtener la dirección IP del cliente en una solicitud HTTP
+app.use((req, res, next) => {
+  const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  console.log(`La dirección IP del cliente es: ${ipAddress}`);
+  next();
 });
