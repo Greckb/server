@@ -71,7 +71,7 @@ app.use(correo);
 
 app.get('/',(req,res)=> res.send('hello'))
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}..`));
 
 // Opciones para el servidor HTTPS
