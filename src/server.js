@@ -17,22 +17,6 @@ import path from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// const certKey = crypto.randomBytes(1024).toString('hex');
-// const certKeyFormatted = certKey.match(/.{1,64}/g).join('\n');
-// const certContents =
-//     '-----BEGIN CERTIFICATE-----' + '\n' +
-//     certKeyFormatted + '\n' +
-//     '-----END CERTIFICATE-----';
-
-
-// const filePath = 'signingKey.pem';
-
-// writeFileSync(
-//   filePath,
-//   certContents,
-//   { encoding: 'utf8' }
-// );
-
 const app = express();
 
 // Analizar solicitudes JSON
@@ -44,7 +28,7 @@ app.use(
     exposedHeaders: ["authorization"], // you can change the headers
     origin: "*",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    preflightContinue: false
+    preflightContinue: true
   })
 );
 
@@ -75,18 +59,15 @@ const port = process.env.PORT || 8080;
 app.listen(port, () => console.log(`Listening on port ${port}..`));
 
 // Opciones para el servidor HTTPS
-
+const keyPath = path.join(__dirname, 'ssl', 'clave-privada.key');
+const certPath = path.join(__dirname, 'ssl', 'certificado.crt');
 
 const options = {
-  key: fs.readFileSync('./ssl/clave-privada.key'),
-  cert: fs.readFileSync('./ssl/certificado.crt')
+  key: fs.readFileSync(keyPath),
+  cert: fs.readFileSync(certPath)
 };
 
-const app = require('./server.js'); // Reemplaza esto con el nombre de tu archivo principal de Node.js
 // Crear servidor HTTPS
-
 https.createServer(options, app).listen(443, () => {
   console.log('Servidor Node iniciado en el puerto 443 (HTTPS)');
 });
-
-
