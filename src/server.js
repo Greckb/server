@@ -75,14 +75,18 @@ const port = process.env.PORT || 8080;
 app.listen(port, () => console.log(`Listening on port ${port}..`));
 
 // Opciones para el servidor HTTPS
-// const options = {
-//   key: fs.readFileSync(`${__dirname}/../key.pem`),
-//   cert: fs.readFileSync(`${__dirname}/../cert.pem`)
-// };
 
-// // Crear servidor HTTPS
-// https.createServer(options, app).listen(port, () => {
-//   console.log(`Servidor HTTPS iniciado en el puerto ${port}`);
-// });
+
+const options = {
+  key: fs.readFileSync('./ssl/clave-privada.key'),
+  cert: fs.readFileSync('./ssl/certificado.crt')
+};
+
+const app = require('./server.js'); // Reemplaza esto con el nombre de tu archivo principal de Node.js
+// Crear servidor HTTPS
+
+https.createServer(options, app).listen(443, () => {
+  console.log('Servidor Node iniciado en el puerto 443 (HTTPS)');
+});
 
 
