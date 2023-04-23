@@ -36,11 +36,11 @@ router.get('/data', async (req, res) => {
                     // }
                 // ]
             },
-            {
-                title: 'Email',
-                icon: 'mdi:email-outline',
-                path: '/apps/email'
-              },
+            // {
+            //     title: 'Email',
+            //     icon: 'mdi:email-outline',
+            //     path: '/apps/email'
+            //   },
              {
                 path: '/apps/remesas/lista',
                 action: 'read',
@@ -48,12 +48,22 @@ router.get('/data', async (req, res) => {
                 title: 'Remesas',
                 icon: 'ph:bank-bold',
             },
+            // {
+            //     path: '/acl',
+            //     action: 'read',
+            //     subject: 'acl-page',
+            //     title: 'Access Control',
+            //     icon: 'mdi:shield-outline',
+            // },
             {
-                path: '/acl',
+                sectionTitle: 'Normas'
+            },
+            {
+                path: '/apps/terminos',
                 action: 'read',
                 subject: 'acl-page',
-                title: 'Access Control',
-                icon: 'mdi:shield-outline',
+                title: 'Terminos',
+                icon: 'ph:bank-bold',
             },
             
         ]
