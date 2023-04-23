@@ -69,7 +69,6 @@ router.get('/data', async (req, res) => {
         ]
     // Enviamos los datos al cliente
     res.send(navigation);
-    console.log('data')
 });
 
 
