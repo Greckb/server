@@ -63,7 +63,7 @@ router.get('/data', async (req, res) => {
                 action: 'read',
                 subject: 'acl-page',
                 title: 'Terminos',
-                icon: 'ph:bank-bold',
+                icon: 'mdi:contract-outline',
             },
             
         ]

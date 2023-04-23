@@ -59,13 +59,13 @@ const port = process.env.PORT || 8080;
 app.listen(port, () => console.log(`Listening on port ${port}..`));
 
 // Opciones para el servidor HTTPS
-const options = {
-  key: fs.readFileSync('/home/ubuntu/ssl/clave-privada.key'),
-  cert: fs.readFileSync('/home/ubuntu/proyecto/server/src/ssl/certificado.crt')
-};
+// const options = {
+//   key: fs.readFileSync('/home/ubuntu/ssl/clave-privada.key'),
+//   cert: fs.readFileSync('/home/ubuntu/proyecto/server/src/ssl/certificado.crt')
+// };
 
-const httpsServer = https.createServer(options, app);
+// const httpsServer = https.createServer(options, app);
 
-httpsServer.listen(8443, () => {
-  console.log('Servidor Node iniciado en el puerto 8443 (HTTPS)');
-});
+// httpsServer.listen(8443, () => {
+//   console.log('Servidor Node iniciado en el puerto 8443 (HTTPS)');
+// });
