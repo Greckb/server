@@ -170,6 +170,36 @@ router.post('/addCliente', fileupload, generatePdfMiddleware, async (req, res) =
     }
 });
 
+// Modificar la cuota del cliente por ID
+router.put('/cuota/:id', async (req, res) => {
+    const clientId = req.params.id;
+    const data = req.body;
+    const {Plan, Cuota, Cuotamensual} = data
+    try {
+
+        // Actualizar los datos del cliente en la base de datos
+        const updateQuery = 'UPDATE CLIENTES SET  Plan = ?, Cuota = ?, Cuotamensual = ? WHERE Idcliente = ?';
+        const updateValues = [Plan, Cuota,Cuotamensual, clientId];
+
+        const update = await pool.query(updateQuery, updateValues);
+
+        if (update.affectedRows === 0) {
+            // Si no se han actualizado filas, entonces el cliente no existe
+       
+            res.status(404).send(`El Cliente con el ID ${clientId} no existe`);
+        } else {
+            // El cliente se ha actualizado correctamente
+            res.status(202).json({ message: 'su Tarifa ha sido actualizado correctamente' });
+        }
+    } catch (error) {
+        
+        res.status(500).send('Error al actualizar la Tarifa del cliente');
+    }
+  });
+  
+  
+  
+
 
 export default router
 
