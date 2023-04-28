@@ -174,12 +174,13 @@ router.post('/addCliente', fileupload, generatePdfMiddleware, async (req, res) =
 router.put('/cuota/:id', async (req, res) => {
     const clientId = req.params.id;
     const data = req.body;
-    const {Plan, Cuota, Cuotamensual} = data
+    const {Plan, Cuota, Cuotamensual, Descuento} = data
+    
     try {
 
         // Actualizar los datos del cliente en la base de datos
-        const updateQuery = 'UPDATE CLIENTES SET  Plan = ?, Cuota = ?, Cuotamensual = ? WHERE Idcliente = ?';
-        const updateValues = [Plan, Cuota,Cuotamensual, clientId];
+        const updateQuery = 'UPDATE CLIENTES SET  Plan = ?, Cuota = ?, Cuotamensual = ?, Descuento = ? WHERE Idcliente = ?';
+        const updateValues = [Plan, Cuota,Cuotamensual,Descuento, clientId];
 
         const update = await pool.query(updateQuery, updateValues);
 
