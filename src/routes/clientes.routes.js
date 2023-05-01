@@ -152,17 +152,17 @@ router.post('/addCliente', fileupload, generatePdfMiddleware, async (req, res) =
 
         const Fechafreeze = req.body.data.Fechafreeze || '0000-00-00';
 
-        const { Idcliente, Calle, Ciudad, CodigoPostal, Cuota, Dni, Fechanacimiento, IBAN, Nombre, Numero, Plan, Prefijo, Telefono, Email, Fechaalta, Cuotamensual, Estado, Piso, Observaciones, BIC, checkbox, role, password, comercial, proteccion } = JSON.parse(req.body.data);
+        const { Idcliente, Calle, Ciudad, CodigoPostal, Cuota, Dni, Fechanacimiento, IBAN, Nombre, Numero, Plan, Prefijo, Telefono, Email, Fechaalta, Cuotamensual, Estado, Piso, Observaciones, BIC, checkbox, role, password, comercial, proteccion, Descuento } = JSON.parse(req.body.data);
               
         // Validar y sanitizar los datos de entrada
-        const values = [Idcliente, Nombre, Calle, Numero, CodigoPostal, Ciudad, Prefijo, Telefono, Dni, Fechanacimiento, Fechaalta, imgArchivada, IBAN, Observaciones, Fechafreeze, Cuotamensual, Estado, Email, Plan, Cuota, Piso, checkbox, BIC, role, password, comercial, proteccion, pdfArchivado];
+        const values = [Idcliente, Nombre, Calle, Numero, CodigoPostal, Ciudad, Prefijo, Telefono, Dni, Fechanacimiento, Fechaalta, imgArchivada, IBAN, Observaciones, Fechafreeze, Cuotamensual, Estado, Email, Plan, Cuota, Piso, checkbox, BIC, role, password, comercial, proteccion, pdfArchivado, Descuento];
 
         // Establecer la consulta SQL y los valores a insertar
-        const query = 'INSERT INTO CLIENTES (Idcliente, Nombre, Calle, Numero, CodigoPostal, Ciudad, Prefijo, Telefono, Dni, Fechanacimiento, Fechaalta, Foto, IBAN, Observaciones, Fechafreeze,  Cuotamensual, Estado, Email, Plan, Cuota, Piso, checkbox, BIC, role, password, comercial, proteccion, PDF ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+        const query = 'INSERT INTO CLIENTES (Idcliente, Nombre, Calle, Numero, CodigoPostal, Ciudad, Prefijo, Telefono, Dni, Fechanacimiento, Fechaalta, Foto, IBAN, Observaciones, Fechafreeze,  Cuotamensual, Estado, Email, Plan, Cuota, Piso, checkbox, BIC, role, password, comercial, proteccion, PDF, Descuento ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 
         // Ejecutar la consulta y guardar el resultado
         const addClient = await pool.query(query, values);
-        const newClient = { Idcliente, Nombre, Calle, Numero, CodigoPostal, Ciudad, Prefijo, Telefono, Dni, Fechanacimiento, Fechaalta, Foto: imgArchivada, IBAN, Observaciones, Fechafreeze, Cuotamensual, Estado, Email, Plan, Cuota, Piso, checkbox, BIC, role, password, comercial, proteccion, PDF: pdfArchivado };
+        const newClient = { Idcliente, Nombre, Calle, Numero, CodigoPostal, Ciudad, Prefijo, Telefono, Dni, Fechanacimiento, Fechaalta, Foto: imgArchivada, IBAN, Observaciones, Fechafreeze, Cuotamensual, Estado, Email, Plan, Cuota, Piso, checkbox, BIC, role, password, comercial, proteccion, PDF: pdfArchivado, Descuento };
         res.status(201).json(newClient);
     } catch (error) {
         
