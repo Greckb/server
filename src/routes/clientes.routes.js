@@ -187,7 +187,7 @@ router.put('/cuota/:id', async (req, res) => {
         const updateValues = [Plan, Cuota,Cuotamensual,Descuento, TipoPago,UltimoPago, ProximoPago,clientId];
 
         const update = await pool.query(updateQuery, updateValues);
-        console.log(update)
+       
         if (update.affectedRows === 0) {
             // Si no se han actualizado filas, entonces el cliente no existe
        
