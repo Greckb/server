@@ -152,17 +152,18 @@ router.post('/addCliente', fileupload, generatePdfMiddleware, async (req, res) =
 
         const Fechafreeze = req.body.data.Fechafreeze || '0000-00-00';
 
-        const { Idcliente, Calle, Ciudad, CodigoPostal, Cuota, Dni, Fechanacimiento, IBAN, Nombre, Numero, Plan, Prefijo, Telefono, Email, Fechaalta, Cuotamensual, Estado, Piso, Observaciones, BIC, checkbox, role, password, comercial, proteccion, Descuento } = JSON.parse(req.body.data);
+        const { Idcliente, Calle, Ciudad, CodigoPostal, Cuota, Dni, Fechanacimiento, IBAN, Nombre, Numero, Plan, Prefijo, Telefono, Email, Fechaalta, Cuotamensual, Estado, Piso, Observaciones, BIC, checkbox, role, password, comercial, proteccion, Descuento, UltimoPago, ProximoPago, TipoPago  } = JSON.parse(req.body.data);
               
+        console.log(JSON.parse(req.body.data))
         // Validar y sanitizar los datos de entrada
-        const values = [Idcliente, Nombre, Calle, Numero, CodigoPostal, Ciudad, Prefijo, Telefono, Dni, Fechanacimiento, Fechaalta, imgArchivada, IBAN, Observaciones, Fechafreeze, Cuotamensual, Estado, Email, Plan, Cuota, Piso, checkbox, BIC, role, password, comercial, proteccion, pdfArchivado, Descuento];
+        const values = [Idcliente, Nombre, Calle, Numero, CodigoPostal, Ciudad, Prefijo, Telefono, Dni, Fechanacimiento, Fechaalta, imgArchivada, IBAN, Observaciones, Fechafreeze, Cuotamensual, Estado, Email, Plan, Cuota, Piso, checkbox, BIC, role, password, comercial, proteccion, pdfArchivado, Descuento, UltimoPago, ProximoPago, TipoPago];
 
         // Establecer la consulta SQL y los valores a insertar
-        const query = 'INSERT INTO CLIENTES (Idcliente, Nombre, Calle, Numero, CodigoPostal, Ciudad, Prefijo, Telefono, Dni, Fechanacimiento, Fechaalta, Foto, IBAN, Observaciones, Fechafreeze,  Cuotamensual, Estado, Email, Plan, Cuota, Piso, checkbox, BIC, role, password, comercial, proteccion, PDF, Descuento ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+        const query = 'INSERT INTO CLIENTES (Idcliente, Nombre, Calle, Numero, CodigoPostal, Ciudad, Prefijo, Telefono, Dni, Fechanacimiento, Fechaalta, Foto, IBAN, Observaciones, Fechafreeze,  Cuotamensual, Estado, Email, Plan, Cuota, Piso, checkbox, BIC, role, password, comercial, proteccion, PDF, Descuento, UltimoPago, ProximoPago, TipoPago) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 
         // Ejecutar la consulta y guardar el resultado
         const addClient = await pool.query(query, values);
-        const newClient = { Idcliente, Nombre, Calle, Numero, CodigoPostal, Ciudad, Prefijo, Telefono, Dni, Fechanacimiento, Fechaalta, Foto: imgArchivada, IBAN, Observaciones, Fechafreeze, Cuotamensual, Estado, Email, Plan, Cuota, Piso, checkbox, BIC, role, password, comercial, proteccion, PDF: pdfArchivado, Descuento };
+        const newClient = { Idcliente, Nombre, Calle, Numero, CodigoPostal, Ciudad, Prefijo, Telefono, Dni, Fechanacimiento, Fechaalta, Foto: imgArchivada, IBAN, Observaciones, Fechafreeze, Cuotamensual, Estado, Email, Plan, Cuota, Piso, checkbox, BIC, role, password, comercial, proteccion, PDF: pdfArchivado, Descuento, UltimoPago, ProximoPago, TipoPago};
         res.status(201).json(newClient);
     } catch (error) {
         
@@ -174,16 +175,19 @@ router.post('/addCliente', fileupload, generatePdfMiddleware, async (req, res) =
 router.put('/cuota/:id', async (req, res) => {
     const clientId = req.params.id;
     const data = req.body;
-    const {Plan, Cuota, Cuotamensual, Descuento} = data
-    
+    const {Plan, Cuota, Cuotamensual, Descuento, TipoPago, UltimoPago, ProximoPago} = data
+
+
+
+  
     try {
 
         // Actualizar los datos del cliente en la base de datos
-        const updateQuery = 'UPDATE CLIENTES SET  Plan = ?, Cuota = ?, Cuotamensual = ?, Descuento = ? WHERE Idcliente = ?';
-        const updateValues = [Plan, Cuota,Cuotamensual,Descuento, clientId];
+        const updateQuery = 'UPDATE CLIENTES SET  Plan = ?, Cuota = ?, Cuotamensual = ?, Descuento = ?, TipoPago= ?, UltimoPago = ?, ProximoPago = ? WHERE Idcliente = ?';
+        const updateValues = [Plan, Cuota,Cuotamensual,Descuento, TipoPago,UltimoPago, ProximoPago,clientId];
 
         const update = await pool.query(updateQuery, updateValues);
-
+        console.log(update)
         if (update.affectedRows === 0) {
             // Si no se han actualizado filas, entonces el cliente no existe
        
