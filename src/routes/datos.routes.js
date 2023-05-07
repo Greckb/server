@@ -59,11 +59,11 @@ router.get('/data', async (req, res) => {
                 sectionTitle: 'Normas'
             },
             {
-                path: '/apps/terminos',
-                action: 'read',
+                path: '/apps/remesas/lista',
+                action: ['read', 'create', 'update', 'delete'],
                 subject: 'acl-page',
-                title: 'Terminos',
-                icon: 'mdi:contract-outline',
+                title: 'Remesas',
+                icon: 'ph:bank-bold',
             },
             
         ]
