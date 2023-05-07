@@ -226,6 +226,17 @@ router.post('/remesas', async (req, res) => {
 //      }
 // });
 
+// router.get('/pagos', async (req, res) => {
+
+//     //traer los datos de la base de datos de la ultima modificacion que ha habido el la tabla clientes y guardarlos en la variable clientes
+//     const select = 'SELECT Idcliente, ProximoPago, UltimoPago, TipoPago, fecha_modificacion, columna_modificada FROM CLIENTES';
+//     const result = await pool.query(select);
+
+//     const clientes = result[0];
+//     console.log(clientes)
+ 
+// });
+
 
 
 function generarXML(transactions, datos) {
