@@ -41,9 +41,9 @@ router.get('/data', async (req, res) => {
             //     icon: 'mdi:email-outline',
             //     path: '/apps/email'
             //   },
-             {
+            {
                 path: '/apps/remesas/lista',
-                action: 'read',
+                action: ['read', 'create', 'update', 'delete'],
                 subject: 'acl-page',
                 title: 'Remesas',
                 icon: 'ph:bank-bold',
@@ -59,11 +59,11 @@ router.get('/data', async (req, res) => {
                 sectionTitle: 'Normas'
             },
             {
-                path: '/apps/remesas/lista',
-                action: ['read', 'create', 'update', 'delete'],
+                path: '/apps/terminos',
+                action: 'read',
                 subject: 'acl-page',
-                title: 'Remesas',
-                icon: 'ph:bank-bold',
+                title: 'Terminos',
+                icon: 'mdi:contract-outline',
             },
             
         ]
