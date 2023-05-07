@@ -44,7 +44,6 @@ router.get('/data', async (req, res) => {
             {
                 path: '/apps/remesas/lista',
                 action: ['read', 'create', 'update', 'delete'],
-                subject: 'acl-page',
                 title: 'Remesas',
                 icon: 'ph:bank-bold',
             },
