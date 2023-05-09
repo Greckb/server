@@ -154,7 +154,7 @@ router.post('/addCliente', fileupload, generatePdfMiddleware, async (req, res) =
 
         const { Idcliente, Calle, Ciudad, CodigoPostal, Cuota, Dni, Fechanacimiento, IBAN, Nombre, Numero, Plan, Prefijo, Telefono, Email, Fechaalta, Cuotamensual, Estado, Piso, Observaciones, BIC, checkbox, role, password, comercial, proteccion, Descuento, UltimoPago, ProximoPago, TipoPago  } = JSON.parse(req.body.data);
               
-        console.log(JSON.parse(req.body.data))
+        
         // Validar y sanitizar los datos de entrada
         const values = [Idcliente, Nombre, Calle, Numero, CodigoPostal, Ciudad, Prefijo, Telefono, Dni, Fechanacimiento, Fechaalta, imgArchivada, IBAN, Observaciones, Fechafreeze, Cuotamensual, Estado, Email, Plan, Cuota, Piso, checkbox, BIC, role, password, comercial, proteccion, pdfArchivado, Descuento, UltimoPago, ProximoPago, TipoPago];
 

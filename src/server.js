@@ -7,6 +7,7 @@ import datos from './routes/datos.routes.js';
 import login from './routes/login.routes.js';
 import remesas from './routes/remesas.routes.js';
 import correo from './routes/correo.routes.js';
+import notas from './routes/notas.routes.js';
 import https from 'https';
 import fs from 'fs';
 import { writeFileSync } from 'fs';
@@ -52,6 +53,8 @@ app.use(remesas);
 app.use(login);
 
 app.use(correo);
+
+app.use(notas);
 
 app.get('/',(req,res)=> res.send('hello'))
 
