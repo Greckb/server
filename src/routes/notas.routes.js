@@ -10,6 +10,7 @@ const router = Router()
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+//Traer todas las notas
 router.post('/notas', async (req, res) => {
     try {
       const { subject, note } = req.body.values;
@@ -34,7 +35,7 @@ router.post('/notas', async (req, res) => {
     }
   });
   
-
+//Crear notas individuales
 router.get(`/notas/:id`, async (req, res) => {
     try {
         const cliente_id = req.params.id;
@@ -53,6 +54,30 @@ router.get(`/notas/:id`, async (req, res) => {
     }
 });
 
+//Borrar las notas individuales
+router.delete(`/notas/:id`, async (req, res) => {
+   
+    try {
+        const cliente_id = req.params.id;
+               
+
+      // Eliminar la nota de la base de datos
+      const deleteQuery = 'DELETE FROM Observaciones WHERE id = ?';
+      const result = await pool.query(deleteQuery, [cliente_id]);
+      
+      // Verificar si la nota se eliminó correctamente
+      if (result.affectedRows === 0) {
+        // No se encontró una nota con el ID proporcionado
+        return res.status(404).json({ message: 'La nota no existe' });
+      }
+  
+      res.sendStatus(200); // Respondemos con estado 200 OK si la nota se elimina correctamente
+    } catch (error) {
+      console.error(error);
+      res.sendStatus(500); // Respondemos con estado 500 Internal Server Error en caso de error
+    }
+  });
+  
 
 
 export default router

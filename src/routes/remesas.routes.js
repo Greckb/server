@@ -97,6 +97,7 @@ router.get('/remesas', async (req, res) => {
 router.get('/factura/:id', async (req, res) => {
     try {
         const clientId = req.params.id;
+        console.log(clientId)
         const query = 'SELECT Factura_cliente.*, CLIENTES.Nombre AS cliente_nombre, CLIENTES.Plan, CLIENTES.Cuota FROM Factura_cliente INNER JOIN CLIENTES ON Factura_cliente.cliente_id = CLIENTES.idcliente WHERE Factura_cliente.id = ?';
         const result = await pool.query(query, [clientId]);
         res.json(result[0])
@@ -157,6 +158,32 @@ router.post('/remesas', async (req, res) => {
         res.status(500).send('Error en el servidor');
     }
 });
+
+//REcoger los datos del cliente en una remesa
+router.get('/cliente/:id', async (req, res) => {
+    try {
+      const clienteId = req.params.id; // Obtener el ID del cliente desde los parámetros de la URL
+      const query = `
+        SELECT fc.*, c.plan, c.cuota AS cliente_cuota
+        FROM Factura_cliente fc
+        JOIN CLIENTES c ON fc.cliente_id = c.Idcliente
+        WHERE fc.cliente_id = ?
+      `; // Consulta con JOIN y un parámetro
+  
+      // Ejecutar la consulta con el ID del cliente como parámetro
+      const [rows] = await pool.query(query, [clienteId]);
+  
+      // Enviar los resultados al cliente como respuesta
+      res.json(rows);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error al obtener los datos de la factura." });
+    }
+  });
+ 
+
+
+
 
 
 
