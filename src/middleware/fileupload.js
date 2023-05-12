@@ -26,8 +26,10 @@ const processImage = async (req, res, next) => {
       const image = await Jimp.read(req.file.path);
       // Redimensionar la imagen a un ancho máximo de 800 píxeles
       image.resize(800, Jimp.AUTO);
-      // Sobreescribir el archivo original con la versión reducida
-      await image.writeAsync(req.file.path);
+      // Cambiar el formato de la imagen a JPG
+    await image.quality(50).writeAsync(req.file.path.replace(/\.[^.]+$/, '.jpg'));
+      // // Sobreescribir el archivo original con la versión reducida
+      // await image.writeAsync(req.file.path);
       // Llamar al siguiente middleware
       next();
     } catch (error) {
