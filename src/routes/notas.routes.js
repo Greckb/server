@@ -39,7 +39,7 @@ router.post('/notas', async (req, res) => {
 router.get(`/notas/:id`, async (req, res) => {
     try {
         const cliente_id = req.params.id;
-
+        
     
         // Realizar una consulta a la base de datos para obtener todas las observaciones
          // Obtener los datos del cliente de la base de datos
@@ -71,10 +71,31 @@ router.delete(`/notas/:id`, async (req, res) => {
         return res.status(404).json({ message: 'La nota no existe' });
       }
   
-      res.sendStatus(200); // Respondemos con estado 200 OK si la nota se elimina correctamente
+      res.status(202).json({ message: 'La nota se borro correctamente' }); // Respondemos con estado 200 OK si la nota se elimina correctamente
     } catch (error) {
       console.error(error);
-      res.sendStatus(500); // Respondemos con estado 500 Internal Server Error en caso de error
+      res.status(500).json({ message: 'Ocurrio un error a la hora de borrar la nota' }); // Respondemos con estado 200 OK si la nota se elimina correctamente
+    }
+  });
+  
+//Editar Notas
+  router.put(`/notas/:id`, async (req, res) => {
+    try {
+      const id = req.params.id;
+      const { subject, note } = req.body.values;
+
+      const fechaActual = new Date().toISOString().split('T')[0];
+      
+      const updateQuery = 'UPDATE Observaciones SET asunto = ?, nota = ?, date = ? WHERE id = ?';
+      const values = [subject, note, fechaActual, id];
+  
+      // Ejecutar la consulta de actualización en la base de datos
+      await pool.query(updateQuery, values);
+  
+      res.sendStatus(201);
+    } catch (error) {
+      console.error(error);
+      res.sendStatus(500);
     }
   });
   
