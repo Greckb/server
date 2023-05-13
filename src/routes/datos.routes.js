@@ -20,21 +20,21 @@ router.get('/data', async (req, res) => {
                 title: 'Clientes',
                 icon: 'mdi:account-outline',
                 path: '/apps/user/list',
-                // children: [
-                //     {
-                //         title: 'Lista de Clientes',
-                //         path: '/apps/user/list'
-                //     }
-                    // {
-                    //     title: 'Cliente',
-                    //     children: [
-                    //         {
-                    //             title: 'Perfil',
-                    //             path: '/apps/user/view/overview'
-                    //         }
-                    //     ]
-                    // }
-                // ]
+                children: [
+                    {
+                        title: 'Lista de Clientes',
+                        path: '/apps/user/list'
+                    },
+                    {
+                        title: 'Cliente',
+                        children: [
+                            {
+                                title: 'Perfil',
+                                path: '/apps/user/view/overview'
+                            }
+                        ]
+                    }
+                ]
             },
             // {
             //     title: 'Email',
@@ -48,13 +48,11 @@ router.get('/data', async (req, res) => {
                 subject: 'acl-remesa',
                 icon: 'ph:bank-bold',
             },
-            // {
-            //     path: '/acl',
-            //     action: 'read',
-            //     subject: 'acl-page',
-            //     title: 'Access Control',
-            //     icon: 'mdi:shield-outline',
-            // },
+            {
+                title: 'Calendar',
+                icon: 'mdi:calendar-blank-outline',
+                path: '/apps/calendar'
+              },
             {
                 sectionTitle: 'Normas'
             },
