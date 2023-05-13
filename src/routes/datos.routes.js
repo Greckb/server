@@ -20,21 +20,21 @@ router.get('/data', async (req, res) => {
                 title: 'Clientes',
                 icon: 'mdi:account-outline',
                 path: '/apps/user/list',
-                children: [
-                    {
-                        title: 'Lista de Clientes',
-                        path: '/apps/user/list'
-                    },
-                    {
-                        title: 'Cliente',
-                        children: [
-                            {
-                                title: 'Perfil',
-                                path: '/apps/user/view/overview'
-                            }
-                        ]
-                    }
-                ]
+                // children: [
+                //     {
+                //         title: 'Lista de Clientes',
+                //         path: '/apps/user/list'
+                //     }
+                    // {
+                    //     title: 'Cliente',
+                    //     children: [
+                    //         {
+                    //             title: 'Perfil',
+                    //             path: '/apps/user/view/overview'
+                    //         }
+                    //     ]
+                    // }
+                // ]
             },
             // {
             //     title: 'Email',
