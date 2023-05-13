@@ -207,7 +207,8 @@ router.get('/estadisticas', async (req, res) => {
         
 
         const activos = result[0].filter(cliente => cliente.Estado === 'Activo')
-        const inactivos = result[0].filter(cliente => cliente.Estado === 'Freeze')
+        const inactivos = result[0].filter(cliente => cliente.Estado === 'Baja')
+
 
         const porcentajeActivos =  Math.round((activos.length / result[0].length) * 100);
         const porcentajeInactivos = Math.round((inactivos.length / result[0].length) * 100);
@@ -236,7 +237,7 @@ router.get('/estadisticas', async (req, res) => {
                 color: 'negative',
                 trend: 'negative',
                 trendNumber: `${porcentajeInactivos}%`,
-                title: 'Clientes Freeze',
+                title: 'Clientes de Baja',
                 icon: 'mdi:account-outline'
               },
             ],
