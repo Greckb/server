@@ -165,7 +165,7 @@ router.get('/calendario/eventos', (req, res) => {
 
 
   //Actualizar eventos
-  router.post('/apps/calendar/update-event', (req, res) => {
+  router.post('/calendario/update-event', (req, res) => {
     const eventData = req.body.data.event;
   
     // Convertir el Id a número
@@ -182,7 +182,7 @@ router.get('/calendario/eventos', (req, res) => {
 
 
   //Eliminar eventos
-  router.delete('/apps/calendar/remove-event/:id', (req, res) => {
+  router.delete('/calendario/remove-event/:id', (req, res) => {
     // Obtener el id del evento de la URL
     const { id } = req.params;
   

@@ -49,7 +49,7 @@ router.get('/data', async (req, res) => {
                 icon: 'ph:bank-bold',
             },
             {
-                title: 'Calendar',
+                title: 'Calendario',
                 icon: 'mdi:calendar-blank-outline',
                 path: '/apps/calendar'
               },
