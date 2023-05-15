@@ -65,6 +65,13 @@ router.get('/data', async (req, res) => {
                 title: 'Terminos',
                 icon: 'mdi:contract-outline',
             },
+            {
+                path: '/acl',
+                action: 'read',
+                subject: 'acl-page',
+                icon: 'mdi:shield-outline',
+                title: 'Access Control'
+              }
             
         ]
     // Enviamos los datos al cliente
