@@ -52,7 +52,7 @@ router.get('/data', async (req, res) => {
                 title: 'Calendario',
                 icon: 'mdi:calendar-blank-outline',
                 action: ['read', 'create', 'update', 'delete'],
-                subject: 'calendar',
+                subject: 'acl-page',
                 path: '/apps/calendar'
               },
             {
