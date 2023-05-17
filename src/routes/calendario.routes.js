@@ -29,7 +29,7 @@ const data = {
       end: nextDay,
       allDay: false,
       extendedProps: {
-        calendar: 'Business'
+        calendar: 'Funcional'
       }
     },
     {
