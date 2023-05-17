@@ -14,7 +14,8 @@ router.get('/data', async (req, res) => {
                
             // },
             {
-                sectionTitle: 'Secciones'
+                sectionTitle: 'Secciones',
+                action: 'read',
             },
             {
                 title: 'Clientes',
@@ -43,35 +44,34 @@ router.get('/data', async (req, res) => {
             //   },
             {
                 path: '/apps/remesas/lista',
-                action: ['read', 'create', 'update', 'delete'],
                 title: 'Remesas',
-                subject: 'acl-remesa',
                 icon: 'ph:bank-bold',
             },
             {
                 title: 'Calendario',
                 icon: 'mdi:calendar-blank-outline',
-                action: ['read', 'create', 'update', 'delete'],
-                subject: 'acl-page',
+                action: 'read',
+                subject: 'calendario',
                 path: '/apps/calendar'
               },
             {
-                sectionTitle: 'Normas'
+                sectionTitle: 'Normas',
+                action: 'read',
             },
             {
+                title: 'Terminos',
                 path: '/apps/terminos',
                 action: 'read',
-                subject: 'acl-page',
-                title: 'Terminos',
+                subject: 'terminos',
                 icon: 'mdi:contract-outline',
             },
-            {
-                path: '/acl',
-                action: 'read',
-                subject: 'acl-page',
-                icon: 'mdi:shield-outline',
-                title: 'Access Control'
-              }
+            // {
+            //     path: '/acl',
+            //     action: 'read',
+            //     subject: 'acl-page',
+            //     icon: 'mdi:shield-outline',
+            //     title: 'Access Control'
+            //   }
             
         ]
     // Enviamos los datos al cliente

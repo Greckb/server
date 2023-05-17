@@ -136,10 +136,10 @@ const data = {
 
 
 //Trae todo el calendario
-router.get('/calendario/eventos', (req, res) => {
+router.get('/calendar/events', (req, res) => {
     // Obtener los eventos del calendario solicitados como un Array
     const { calendars } = req.query;
-  
+    
     const eventosFiltrados = data.events.filter(evento => calendars.includes(evento.extendedProps.calendar));
   
     res.status(200).json(eventosFiltrados);
@@ -147,7 +147,7 @@ router.get('/calendario/eventos', (req, res) => {
 
 
 // añadir Eventos
-  router.post('/calendario/add-event', (req, res) => {
+  router.post('/calendar/add-event', (req, res) => {
     // Obtener el evento de los datos enviados en el cuerpo de la petición
     const { event } = req.body.data;
     const { length } = data.events;
@@ -165,7 +165,7 @@ router.get('/calendario/eventos', (req, res) => {
 
 
   //Actualizar eventos
-  router.post('/calendario/update-event', (req, res) => {
+  router.post('/calendar/update-event', (req, res) => {
     const eventData = req.body.data.event;
   
     // Convertir el Id a número
@@ -182,7 +182,7 @@ router.get('/calendario/eventos', (req, res) => {
 
 
   //Eliminar eventos
-  router.delete('/calendario/remove-event/:id', (req, res) => {
+  router.delete('/calendar/remove-event/:id', (req, res) => {
     // Obtener el id del evento de la URL
     const { id } = req.params;
   
