@@ -43,55 +43,48 @@ router.get('/usuarios/:id', async (req, res) => {
 // Modificar el cliente por ID
 router.put('/usuarios/:id', fileupload, async (req, res, next) => {
     if (!req.file) {
-        // Si no hay archivo de imagen, pasa al siguiente middleware
-        return next();
+      // Si no hay archivo de imagen, pasa al siguiente middleware
+      return next();
     }
-
+  
     // Si hay archivo de imagen, procesa la imagen
     processImage(req, res, next);
-}, async (req, res) => {
+  }, async (req, res) => {
     try {
-    const clientId = req.params.id;
-    const data = JSON.parse(req.body.data);
-    const { Calle, Ciudad, Fechafreeze, CodigoPostal, Cuota, Dni, Fechanacimiento, IBAN, Nombre, Numero, Plan, Prefijo, Telefono, Email, Fechaalta, Cuotamensual, Piso, Observaciones, checkbox, Estado, BIC, role, password, comercial, proteccion } = data;
-
-
-        // Obtener los datos del cliente de la base de datos
-        const query = 'SELECT * FROM CLIENTES WHERE Idcliente = ?';
-        const resp = await pool.query(query, [clientId]);
-        const client = resp[0];
-
-
-
-        let imgArchivada = null;
-        if (req.file) {
-            imgArchivada = fs.readFileSync(`${__dirname}/../uploads/${req.file.filename}`);
-        } else {
-            imgArchivada = client.Foto;
-        }
-
-        // Actualizar los datos del cliente en la base de datos
-        const updateQuery = 'UPDATE CLIENTES SET Nombre = ?, Telefono = ?, Dni = ?, Calle = ?, Ciudad = ?, CodigoPostal = ?, Cuota = ?, Fechanacimiento = ?, IBAN = ?, Numero = ?, Plan = ?, Prefijo = ?, Email = ?, Fechaalta = ?, Cuotamensual = ?, Estado = ?, Foto = ?, Piso = ?, checkbox = ?, Observaciones = ?, Fechafreeze = ?, BIC = ?, role = ?, password = ?, comercial = ?, proteccion = ? WHERE Idcliente = ?';
-        const updateValues = [Nombre, Telefono, Dni, Calle, Ciudad, CodigoPostal, Cuota, Fechanacimiento, IBAN, Numero, Plan, Prefijo, Email, Fechaalta, Cuotamensual, Estado, imgArchivada, Piso, checkbox, Observaciones, Fechafreeze, BIC, role, password, comercial, proteccion, clientId];
-
-        const update = await pool.query(updateQuery, updateValues);
-
-        if (update[0].affectedRows === 0) {
-            // Si no se han actualizado filas, entonces el cliente no existe
-            
-            res.status(404).send(`El cliente con el ID ${clientId} no existe`);
-        } else {
-            // El cliente se ha actualizado correctamente
-            res.status(202).json({ message: 'Cliente actualizado correctamente' });
-
-        }
+      const clientId = req.params.id;
+      const data = JSON.parse(req.body.data);
+      const { Calle, Ciudad, CodigoPostal, Dni, Fechanacimiento, IBAN, Nombre, Numero, Prefijo, Telefono, Email, Fechaalta, Piso, BIC } = data;
+  
+      // Obtener los datos del cliente de la base de datos
+      const query = 'SELECT * FROM CLIENTES WHERE Idcliente = ?';
+      const resp = await pool.query(query, [clientId]);
+      const client = resp[0];
+  
+      let imgArchivada = null;
+      if (req.file) {
+        imgArchivada = fs.readFileSync(`${__dirname}/../uploads/${req.file.filename}`);
+      } else {
+        imgArchivada = client.Foto;
+      }
+  
+      // Actualizar los datos del cliente en la base de datos
+      const updateQuery = 'UPDATE CLIENTES SET Nombre = ?, Telefono = ?, Dni = ?, Calle = ?, Ciudad = ?, CodigoPostal = ?, Fechanacimiento = ?, IBAN = ?, Numero = ?, Prefijo = ?, Email = ?, Fechaalta = ?, Foto = ?, Piso = ?, BIC = ? WHERE Idcliente = ?';
+      const updateValues = [Nombre, Telefono, Dni, Calle, Ciudad, CodigoPostal, Fechanacimiento, IBAN, Numero, Prefijo, Email, Fechaalta, imgArchivada, Piso, BIC, clientId];
+  
+      const update = await pool.query(updateQuery, updateValues);
+  
+      if (update.affectedRows === 0) {
+        // Si no se han actualizado filas, entonces el cliente no existe
+        res.status(404).send(`El cliente con el ID ${clientId} no existe`);
+      } else {
+        // El cliente se ha actualizado correctamente
+        res.status(202).json({ message: 'Cliente actualizado correctamente' });
+      }
     } catch (error) {
-       
-        res.status(500).send('Error al actualizar el cliente');
+      res.status(500).send('Error al actualizar el cliente');
     }
-}
-);
-
+  });
+  
 
 // Modificar el Estado del cliente por ID
 router.put('/estado/:id', fileupload, async (req, res, next) => {
