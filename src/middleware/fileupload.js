@@ -22,6 +22,7 @@ const fileupload = multer({
 // Middleware de reducción de tamaño de imagen
 const processImage = async (req, res, next) => {
     try {
+      
       // Abrir la imagen con Jimp
       const image = await Jimp.read(req.file.path);
       // Redimensionar la imagen a un ancho máximo de 800 píxeles
