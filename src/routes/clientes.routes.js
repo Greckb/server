@@ -50,11 +50,12 @@ router.put('/usuarios/:id', fileupload, async (req, res, next) => {
     // Si hay archivo de imagen, procesa la imagen
     processImage(req, res, next);
 }, async (req, res) => {
+    try {
     const clientId = req.params.id;
     const data = JSON.parse(req.body.data);
     const { Calle, Ciudad, Fechafreeze, CodigoPostal, Cuota, Dni, Fechanacimiento, IBAN, Nombre, Numero, Plan, Prefijo, Telefono, Email, Fechaalta, Cuotamensual, Piso, Observaciones, checkbox, Estado, BIC, role, password, comercial, proteccion } = data;
 
-    try {
+
         // Obtener los datos del cliente de la base de datos
         const query = 'SELECT * FROM CLIENTES WHERE Idcliente = ?';
         const resp = await pool.query(query, [clientId]);
@@ -208,12 +209,11 @@ router.get('/estadisticas', async (req, res) => {
 
         const activos = result[0].filter(cliente => cliente.Estado === 'Activo')
         const inactivos = result[0].filter(cliente => cliente.Estado === 'Baja')
-
+        
 
         const porcentajeActivos =  Math.round((activos.length / result[0].length) * 100);
         const porcentajeInactivos = Math.round((inactivos.length / result[0].length) * 100);
 
-        
 
         const cardStatsData = {
             statsHorizontal: [
