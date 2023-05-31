@@ -1,201 +1,140 @@
 import { Router } from "express";
 import { pool } from '../db.js'
-import fs from "fs";
-import { fileURLToPath } from 'url';
-import path from "path";
-import { fileupload, processImage } from '../middleware/fileupload.js'
-import { generatePdfMiddleware } from '../middleware/documento.js'
 
 const router = Router()
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const date = new Date()
-const nextDay = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
-
-const nextMonth =
-  date.getMonth() === 11 ? new Date(date.getFullYear() + 1, 0, 1) : new Date(date.getFullYear(), date.getMonth() + 1, 1)
-
-const prevMonth =
-  date.getMonth() === 11 ? new Date(date.getFullYear() - 1, 0, 1) : new Date(date.getFullYear(), date.getMonth() - 1, 1)
-
-const data = {
-  events: [
-    {
-      id: 1,
-      url: '',
-      title: 'Design Review',
-      start: date,
-      end: nextDay,
-      allDay: false,
-      extendedProps: {
-        calendar: 'Funcional'
-      }
-    },
-    {
-      id: 2,
-      url: '',
-      title: 'Meeting With Client',
-      start: new Date(date.getFullYear(), date.getMonth() + 1, -11),
-      end: new Date(date.getFullYear(), date.getMonth() + 1, -10),
-      allDay: true,
-      extendedProps: {
-        calendar: 'Business'
-      }
-    },
-    {
-      id: 3,
-      url: '',
-      title: 'Family Trip',
-      allDay: true,
-      start: new Date(date.getFullYear(), date.getMonth() + 1, -9),
-      end: new Date(date.getFullYear(), date.getMonth() + 1, -7),
-      extendedProps: {
-        calendar: 'Holiday'
-      }
-    },
-    {
-      id: 4,
-      url: '',
-      title: "Doctor's Appointment",
-      start: new Date(date.getFullYear(), date.getMonth() + 1, -11),
-      end: new Date(date.getFullYear(), date.getMonth() + 1, -10),
-      allDay: true,
-      extendedProps: {
-        calendar: 'Personal'
-      }
-    },
-    {
-      id: 5,
-      url: '',
-      title: 'Dart Game?',
-      start: new Date(date.getFullYear(), date.getMonth() + 1, -13),
-      end: new Date(date.getFullYear(), date.getMonth() + 1, -12),
-      allDay: true,
-      extendedProps: {
-        calendar: 'ETC'
-      }
-    },
-    {
-      id: 6,
-      url: '',
-      title: 'Meditation',
-      start: new Date(date.getFullYear(), date.getMonth() + 1, -13),
-      end: new Date(date.getFullYear(), date.getMonth() + 1, -12),
-      allDay: true,
-      extendedProps: {
-        calendar: 'Personal'
-      }
-    },
-    {
-      id: 7,
-      url: '',
-      title: 'Dinner',
-      start: new Date(date.getFullYear(), date.getMonth() + 1, -13),
-      end: new Date(date.getFullYear(), date.getMonth() + 1, -12),
-      allDay: true,
-      extendedProps: {
-        calendar: 'Family'
-      }
-    },
-    {
-      id: 8,
-      url: '',
-      title: 'Product Review',
-      start: new Date(date.getFullYear(), date.getMonth() + 1, -13),
-      end: new Date(date.getFullYear(), date.getMonth() + 1, -12),
-      allDay: true,
-      extendedProps: {
-        calendar: 'Business'
-      }
-    },
-    {
-      id: 9,
-      url: '',
-      title: 'Monthly Meeting',
-      start: nextMonth,
-      end: nextMonth,
-      allDay: true,
-      extendedProps: {
-        calendar: 'Business'
-      }
-    },
-    {
-      id: 10,
-      url: '',
-      title: 'Monthly Checkup',
-      start: prevMonth,
-      end: prevMonth,
-      allDay: true,
-      extendedProps: {
-        calendar: 'Personal'
-      }
-    }
-  ]
-}
-
 
 //Trae todo el calendario
-router.get('/calendar/events', (req, res) => {
-    // Obtener los eventos del calendario solicitados como un Array
+router.get('/calendar/events', async (req, res) => {
+  try {
     const { calendars } = req.query;
-    
-    const eventosFiltrados = data.events.filter(evento => calendars.includes(evento.extendedProps.calendar));
-  
-    res.status(200).json(eventosFiltrados);
-  });
 
+    const query = `
+      SELECT *
+      FROM calendar
+      WHERE calendar IN (?)
+    `;
+    const values = [calendars];
+    const result = await pool.query(query, values);
+
+    // Transformar el resultado
+    const transformedEvents = result[0].map(event => ({
+      id: event.id,
+      url: event.url || '',
+      title: event.title,
+      start: new Date(event.start),
+      end: new Date(event.end),
+      allDay: event.allDay === 1,
+      extendedProps: {
+        calendar: event.calendar
+      }
+    }));
+
+    
+
+    res.status(200).json(transformedEvents);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener los eventos del calendario' });
+  }
+});
 
 // añadir Eventos
-  router.post('/calendar/add-event', (req, res) => {
-    // Obtener el evento de los datos enviados en el cuerpo de la petición
+router.post('/calendar/add-event', async (req, res) => {
+  try {
     const { event } = req.body.data;
-    const { length } = data.events;
-    let lastIndex = 0;
-  
-    if (length) {
-      lastIndex = data.events[length - 1].id;
-    }
-  
-    event.id = lastIndex + 1;
-    data.events.push(event);
-  
-    res.status(201).json({ event });
-  });
+
+    const lastIndexResult = await pool.query('SELECT COALESCE(MAX(id), 0) AS lastIndex FROM calendar');
+    const lastIndex = lastIndexResult[0][0].lastIndex || 0;
+    const eventId = lastIndex + 1;
 
 
-  //Actualizar eventos
-  router.post('/calendar/update-event', (req, res) => {
+    const query = `
+      INSERT INTO calendar (id, url, display, title, start, end, allDay, calendar, idCliente)
+      VALUES (?,?, ?,?,?,?,?,?,?)
+    `;
+
+    const values = [
+      eventId, // Valor generado manualmente para la columna id
+      event.url || null,
+      event.display,
+      event.title,
+      event.start,
+      event.end,
+      event.allDay ? 1 : 0,
+      event.extendedProps.calendar,
+      event.idCliente
+    ];
+
+    const result = await pool.query(query, values);
+
+    res.sendStatus(201);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al agregar el evento' });
+  }
+});
+
+//Actualizar eventos
+router.put('/calendar/update-event', async (req, res) => {
+  try {
     const eventData = req.body.data.event;
-  
+
     // Convertir el Id a número
     eventData.id = Number(eventData.id);
-    const evento = data.events.find(ev => ev.id === Number(eventData.id));
-  
-    if (evento) {
-      Object.assign(evento, eventData);
-      res.status(200).json({ event: evento });
+
+    const query = `
+      UPDATE calendar
+      SET url = ?, display = ?, title = ?, start = ?, end = ?, allDay = ?, calendar = ?, idCliente = ?
+      WHERE id = ?
+    `;
+    const values = [
+      eventData.url || null,
+      eventData.display,
+      eventData.title,
+      eventData.start,
+      eventData.end,
+      eventData.allDay ? 1 : 0,
+      eventData.extendedProps.calendar,
+      eventData.idCliente,
+      eventData.id
+    ];
+
+    const result = await pool.query(query, values);
+
+    if (result.affectedRows > 0) {
+      res.status(200).json({ event: eventData });
     } else {
       res.status(400).json({ error: `El evento no existe` });
     }
-  });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al actualizar el evento' });
+  }
+});
 
+// Eliminar eventos
+router.delete('/calendar/remove-event', async (req, res) => {
+  try {
+    // Obtener el id del evento del query parameter
+    const { id } = req.query;
 
-  //Eliminar eventos
-  router.delete('/calendar/remove-event/:id', (req, res) => {
-    // Obtener el id del evento de la URL
-    const { id } = req.params;
-  
     // Convertir el Id a número
     const eventId = Number(id);
-    const eventIndex = data.events.findIndex(ev => ev.id === eventId);
-    
-    if (eventIndex !== -1) {
-      data.events.splice(eventIndex, 1);
+
+    const query = `
+      DELETE FROM calendar
+      WHERE id = ?
+    `;
+    const values = [eventId];
+
+    const result = await pool.query(query, values);
+
+    if (result.affectedRows > 0) {
       res.sendStatus(200);
     } else {
       res.sendStatus(404);
     }
-  });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar el evento' });
+  }
+});
+
 
 export default router;
