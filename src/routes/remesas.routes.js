@@ -296,7 +296,7 @@ function generarXML(transactions, datos) {
     minutos = minutos.toString().padStart(2, '0');
     segundos = segundos.toString().padStart(2, '0');
     
-    let fechaActualStra = `${anioActual}-${mesActual}-${diaActual} T${horas}:${minutos}:${segundos}`;
+    let fechaActualStra = `${anioActual}-${mesActual}-${diaActual}T${horas}:${minutos}:${segundos}`;
 
 
 
