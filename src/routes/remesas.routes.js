@@ -37,8 +37,9 @@ router.get('/remesas/:id', async (req, res) => {
         total: result[0].length,
         totalCuotas: totalCuotas,
         orgId: 'ES30000B67170605',
-        iban: 'ES2321000287350200851310',
-        bic: 'CAIXESBBXXX',
+        iban: 'ES1901824567140200363604',
+        bic: 'BBVAESMMXXX',
+        
 
     };
     const miarray = result[0].map((result, index) => {
@@ -305,7 +306,7 @@ function generarXML(transactions, datos) {
     // Crear el elemento GrpHdr y sus elementos hijos
     const grpHdr = cstmrDrctDbtInitn.ele('GrpHdr');
     grpHdr.ele('MsgId', datos.msgId);
-    grpHdr.ele('CreDtTm', datos.fechaActualStra);
+    grpHdr.ele('CreDtTm', fechaActualStra);
     grpHdr.ele('NbOfTxs', datos.total);
     grpHdr.ele('CtrlSum', datos.totalCuotas);
 
