@@ -275,9 +275,14 @@ function generarXML(transactions, datos) {
     const cstmrDrctDbtInitn = doc.ele('CstmrDrctDbtInitn');
 
 
+    // Obtener el año y el número de mes actual
     let fechaActual = new Date();
     let anioActual = fechaActual.getFullYear();
+    let fechaISO = fechaActual.toISOString();
+    let fechaActualStr = fechaISO.slice(0, 10);
     let mesActual = fechaActual.getMonth() + 1; // Nota: getMonth() devuelve un número de 0 a 11, por eso se suma 1
+
+   
     let diaActual = fechaActual.getDate();
     let horas = fechaActual.getHours();
     let minutos = fechaActual.getMinutes();
@@ -290,16 +295,17 @@ function generarXML(transactions, datos) {
     minutos = minutos.toString().padStart(2, '0');
     segundos = segundos.toString().padStart(2, '0');
     
-    let fechaActualStr = `${anioActual}-${mesActual}-${diaActual} T${horas}:${minutos}:${segundos}`;
-    
-    
+    let fechaActualStra = `${anioActual}-${mesActual}-${diaActual} T${horas}:${minutos}:${segundos}`;
+
+
+
     // Concatenar el año y el número de mes a la cadena 'ESI FITNESS'
     let msgId = `ESI FITNESS ${anioActual}-${mesActual}`;
 
     // Crear el elemento GrpHdr y sus elementos hijos
     const grpHdr = cstmrDrctDbtInitn.ele('GrpHdr');
     grpHdr.ele('MsgId', datos.msgId);
-    grpHdr.ele('CreDtTm', datos.fechaActualStr);
+    grpHdr.ele('CreDtTm', datos.fechaActualStra);
     grpHdr.ele('NbOfTxs', datos.total);
     grpHdr.ele('CtrlSum', datos.totalCuotas);
 
