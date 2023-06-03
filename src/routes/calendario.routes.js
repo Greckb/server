@@ -42,10 +42,11 @@ router.post('/calendar/add-event', async (req, res) => {
   try {
     const { event } = req.body.data;
 
+   
+
     const lastIndexResult = await pool.query('SELECT COALESCE(MAX(id), 0) AS lastIndex FROM calendar');
     const lastIndex = lastIndexResult[0][0].lastIndex || 0;
     const eventId = lastIndex + 1;
-
 
     const query = `
       INSERT INTO calendar (id, url, display, title, start, end, allDay, calendar, idCliente)
@@ -71,6 +72,7 @@ router.post('/calendar/add-event', async (req, res) => {
     res.status(500).json({ error: 'Error al agregar el evento' });
   }
 });
+
 
 //Actualizar eventos
 router.put('/calendar/update-event', async (req, res) => {
@@ -109,6 +111,7 @@ router.put('/calendar/update-event', async (req, res) => {
   }
 });
 
+
 // Eliminar eventos
 router.delete('/calendar/remove-event', async (req, res) => {
   try {
@@ -135,6 +138,7 @@ router.delete('/calendar/remove-event', async (req, res) => {
     res.status(500).json({ error: 'Error al eliminar el evento' });
   }
 });
+
 
 
 export default router;

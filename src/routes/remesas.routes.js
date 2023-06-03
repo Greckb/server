@@ -275,13 +275,24 @@ function generarXML(transactions, datos) {
     const cstmrDrctDbtInitn = doc.ele('CstmrDrctDbtInitn');
 
 
-    // Obtener el año y el número de mes actual
     let fechaActual = new Date();
     let anioActual = fechaActual.getFullYear();
-    let fechaISO = fechaActual.toISOString();
-    let fechaActualStr = fechaISO.slice(0, 10);
     let mesActual = fechaActual.getMonth() + 1; // Nota: getMonth() devuelve un número de 0 a 11, por eso se suma 1
-
+    let diaActual = fechaActual.getDate();
+    let horas = fechaActual.getHours();
+    let minutos = fechaActual.getMinutes();
+    let segundos = fechaActual.getSeconds();
+    
+    // Formatear los valores para que tengan siempre dos dígitos
+    mesActual = mesActual.toString().padStart(2, '0');
+    diaActual = diaActual.toString().padStart(2, '0');
+    horas = horas.toString().padStart(2, '0');
+    minutos = minutos.toString().padStart(2, '0');
+    segundos = segundos.toString().padStart(2, '0');
+    
+    let fechaActualStr = `${anioActual}-${mesActual}-${diaActual} T${horas}:${minutos}:${segundos}`;
+    
+    
     // Concatenar el año y el número de mes a la cadena 'ESI FITNESS'
     let msgId = `ESI FITNESS ${anioActual}-${mesActual}`;
 
