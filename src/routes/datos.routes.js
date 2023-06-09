@@ -66,6 +66,10 @@ router.get('/data', async (req, res) => {
                 icon: 'mdi:contract-outline',
             },
             {
+                sectionTitle: 'Horarios',
+                action: 'read',
+            },
+            {
                 title: 'Horarios',
                 path: '/apps/horarios',
                 action: 'read',
