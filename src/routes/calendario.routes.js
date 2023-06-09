@@ -6,7 +6,9 @@ const router = Router()
 //Trae todo el calendario
 router.get('/calendar/events', async (req, res) => {
   try {
-    const { calendars } = req.query;
+    const { calendars} = req.query;
+
+    console.log( calendars)
 
     const query = `
       SELECT *
@@ -24,12 +26,13 @@ router.get('/calendar/events', async (req, res) => {
       start: new Date(event.start),
       end: new Date(event.end),
       allDay: event.allDay === 1,
+      idCliente: event.idCliente,
       extendedProps: {
         calendar: event.calendar
       }
     }));
 
-    
+    console.log(transformedEvents)
 
     res.status(200).json(transformedEvents);
   } catch (error) {
@@ -41,8 +44,6 @@ router.get('/calendar/events', async (req, res) => {
 router.post('/calendar/add-event', async (req, res) => {
   try {
     const { event } = req.body.data;
-
-   
 
     const lastIndexResult = await pool.query('SELECT COALESCE(MAX(id), 0) AS lastIndex FROM calendar');
     const lastIndex = lastIndexResult[0][0].lastIndex || 0;
@@ -78,7 +79,7 @@ router.post('/calendar/add-event', async (req, res) => {
 router.put('/calendar/update-event', async (req, res) => {
   try {
     const eventData = req.body.data.event;
-
+   
     // Convertir el Id a número
     eventData.id = Number(eventData.id);
 
@@ -101,10 +102,11 @@ router.put('/calendar/update-event', async (req, res) => {
 
     const result = await pool.query(query, values);
 
-    if (result.affectedRows > 0) {
-      res.status(200).json({ event: eventData });
-    } else {
+    if (result.affectedRows === 0) {
       res.status(400).json({ error: `El evento no existe` });
+      
+    } else {
+      res.status(200).json({ event: eventData });
     }
   } catch (error) {
     res.status(500).json({ error: 'Error al actualizar el evento' });
@@ -120,6 +122,7 @@ router.delete('/calendar/remove-event', async (req, res) => {
 
     // Convertir el Id a número
     const eventId = Number(id);
+   
 
     const query = `
       DELETE FROM calendar
@@ -128,11 +131,13 @@ router.delete('/calendar/remove-event', async (req, res) => {
     const values = [eventId];
 
     const result = await pool.query(query, values);
+  
 
-    if (result.affectedRows > 0) {
-      res.sendStatus(200);
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: `El evento no existe` });
+      
     } else {
-      res.sendStatus(404);
+      res.status(200).json( `El evento no existe` );
     }
   } catch (error) {
     res.status(500).json({ error: 'Error al eliminar el evento' });

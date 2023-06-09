@@ -65,6 +65,13 @@ router.get('/data', async (req, res) => {
                 subject: 'terminos',
                 icon: 'mdi:contract-outline',
             },
+            {
+                title: 'Horarios',
+                path: '/apps/horarios',
+                action: 'read',
+                subject: 'horarios',
+                icon: 'mdi:contract-outline',
+            },
             // {
             //     path: '/acl',
             //     action: 'read',
