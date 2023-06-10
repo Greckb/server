@@ -10,6 +10,8 @@ const inspect = (text) => {
     // console.log(util.inspect(text, false, null, true))
 }
 
+
+
 const data = {
   emails: [
     {
@@ -1059,7 +1061,7 @@ let paramsFilteredMails = []
 
 // create an IMAP connection object
 const imap = new Imap({
-    user: 'contacto@esifitnesmataro.com',
+    user: 'consultas@esifitnesmataro.com',
     password: 'Esimataro239',
     host: 'mail.esifitnesmataro.com',
     port: 993,
@@ -1327,144 +1329,128 @@ async function fetchAllEmails() {
 
 
 
+// ------------------------------------------------
+// GET: Return Emails
+router.get('/apps/email/allEmails', (req, res) => {
+  res.status(200).json({ emails: data.emails });
+});
 
 
 // ------------------------------------------------
 // GET: Return Emails
-router.get('/allEmails', async (req, res) => {
-    try {
-        const result = await fetchAllEmails();
-        
-        res.json(result);
-    } catch (err) {
-        res.status(500).send('Error fetching emails');
-    }
+router.get('/apps/email/emails', (req, res) => {
+  const { q = '', folder = 'inbox', label } = req.query;
+  const queryLowered = q.toLowerCase();
+
+  function isInFolder(email) {
+    if (folder === 'trash') return email.folder === 'trash';
+    if (folder === 'starred') return email.isStarred && email.folder !== 'trash';
+
+    return email.folder === (folder || email.folder) && email.folder !== 'trash';
+  }
+
+  const filteredData = data.emails.filter(
+    email =>
+      (email.from.name.toLowerCase().includes(queryLowered) ||
+        email.subject.toLowerCase().includes(queryLowered) ||
+        email.message.toLowerCase().includes(queryLowered)) &&
+      isInFolder(email) &&
+      (label ? email.labels.includes(label) : true)
+  );
+  paramsFilteredMails = filteredData;
+
+  const emailsMeta = {
+    inbox: data.emails.filter(email => !email.isRead && email.folder === 'inbox').length,
+    draft: data.emails.filter(email => email.folder === 'draft').length,
+    spam: data.emails.filter(email => !email.isRead && email.folder === 'spam').length
+  };
+
+  res.status(200).json({
+    emails: filteredData,
+    emailsMeta
+  });
 });
 
-// ------------------------------------------------
-// GET: Return Emails
-router.get('/emails', async (req, res) => {
-    try {
-        const { q = '', folder = 'inbox', label } = req.query;
-        const queryLowered = q.toLowerCase();
-
-        // const data = await fetchEmails();
-
-        function isInFolder(email) {
-            if (folder === 'trash') return email.folder === 'trash';
-            if (folder === 'starred') return email.isStarred && email.folder !== 'trash';
-            return email.folder === (folder || email.folder) && email.folder !== 'trash';
-        }
-
-        const filteredData = data.emails.filter(
-            email =>
-                (email.from.name.toLowerCase().includes(queryLowered) ||
-                    email.subject.toLowerCase().includes(queryLowered) ||
-                    email.message.toLowerCase().includes(queryLowered)) &&
-                isInFolder(email) &&
-                (label ? email.labels.includes(label) : true)
-        )
-        paramsFilteredMails = filteredData
-
-        // ------------------------------------------------
-        // Email Meta
-        // ------------------------------------------------
-        const emailsMeta = {
-            inbox: data.emails.filter(email => !email.isRead && email.folder === 'inbox').length,
-            draft: data.emails.filter(email => email.folder === 'draft').length,
-            spam: data.emails.filter(email => !email.isRead && email.folder === 'spam').length
-        }
-
-        res.status(200).json({
-            emails: filteredData,
-            emailsMeta
-        });
-    } catch (err) {
-        res.status(500).send('Error fetching emails');
-    }
-});
 
 // ------------------------------------------------
 // POST: Update Emails Label
 // ------------------------------------------------
-router.get('/update-emails-label', async (req, res) => {
-    const { emailIds, label } = req.query
-    // const data = await fetchEmails();
-    function updateMailLabels(email) {
-      const labelIndex = email.labels.indexOf(label)
-      if (labelIndex === -1) email.labels.push(label)
-      else email.labels.splice(labelIndex, 1)
-    }
-  
-    data.emails.forEach(email => {
-      if (emailIds.includes(email.id)) updateMailLabels(email)
-    })
-  
-    res.status(200).send('Email labels updated successfully.')
-  })
-  
+router.post('/apps/email/update-emails-label', (req, res) => {
+  const { emailIds, label } = req.body.data;
 
+  function updateMailLabels(email) {
+    const labelIndex = email.labels.indexOf(label);
+    if (labelIndex === -1) email.labels.push(label);
+    else email.labels.splice(labelIndex, 1);
+  }
+
+  data.emails.forEach(email => {
+    if (emailIds.includes(email.id)) updateMailLabels(email);
+  });
+
+  res.sendStatus(200);
+});
+  
 
 
 // ------------------------------------------------
 // GET: GET Single Email
 // ------------------------------------------------
-router.get('/get-email', async (req, res) => {
-    const { id } = req.query
-    const emailId = Number(id)
-    const mail = paramsFilteredMails.find(i => i.id === emailId)
-    if (mail) {
-      const mailIndex = paramsFilteredMails.findIndex(i => i.id === mail.id)
-      mailIndex > 0 ? (mail.hasPreviousMail = true) : (mail.hasPreviousMail = false)
-      mailIndex < paramsFilteredMails.length - 1 ? (mail.hasNextMail = true) : (mail.hasNextMail = false)
-    }
+router.get('/apps/email/get-email', (req, res) => {
+  const { id } = req.query;
+  const emailId = Number(id);
+  const mail = paramsFilteredMails.find(i => i.id === emailId);
   
-    return mail ? res.status(200).send(mail) : res.status(404).send('Email not found.')
-  })
+
+  if (mail) {
+    const mailIndex = paramsFilteredMails.findIndex(i => i.id === mail.id);
+    mail.hasPreviousMail = mailIndex > 0;
+    mail.hasNextMail = mailIndex < paramsFilteredMails.length - 1;
+  }
+
+  if (mail) {
+    res.status(200).json(mail);
+  } else {
+    res.sendStatus(404);
+  }
+});
 
 
 // ------------------------------------------------
 // POST: Update Email
 // ------------------------------------------------
-  router.post('/update-emails', async (req, res) => {
-    const { emailIds, dataToUpdate } = req.body
-    // const data = await fetchEmails();
-    function updateMailData(email) {
-      Object.assign(email, dataToUpdate)
+router.post('/apps/email/update-emails', (req, res) => {
+  const { emailIds, dataToUpdate } = req.body.data;
+
+  function updateMailData(email) {
+    Object.assign(email, dataToUpdate);
+  }
+
+  data.emails.forEach(email => {
+    if (emailIds.includes(email.id)) {
+      updateMailData(email);
     }
-    data.emails.forEach(email => {
-      if (emailIds.includes(email.id)) updateMailData(email)
-    })
-  
-    res.status(200).send('Email data updated successfully.')
-  })
+  });
+
+  res.sendStatus(200);
+});
   
 
 // ------------------------------------------------
 // GET: Paginate Existing Email
 // ------------------------------------------------
-router.get('/paginate-email', async (req, res) => {
-  const { dir, emailId } = req.query
-  const currentEmailIndex = paramsFilteredMails.findIndex(e => e.id === emailId)
-  const newEmailIndex = dir === 'previous' ? currentEmailIndex - 1 : currentEmailIndex + 1
-  const newEmail = paramsFilteredMails[newEmailIndex]
+router.get('/apps/email/paginate-email', (req, res) => {
+  const { dir, emailId } = req.query;
+  const currentEmailIndex = paramsFilteredMails.findIndex(e => e.id === emailId);
+  const newEmailIndex = dir === 'previous' ? currentEmailIndex - 1 : currentEmailIndex + 1;
+  const newEmail = paramsFilteredMails[newEmailIndex];
   if (newEmail) {
-    const mailIndex = paramsFilteredMails.findIndex(i => i.id === newEmail.id)
-    mailIndex > 0 ? (newEmail.hasPreviousMail = true) : (newEmail.hasPreviousMail = false)
-    mailIndex < paramsFilteredMails.length - 1 ? (newEmail.hasNextMail = true) : (newEmail.hasNextMail = false)
+    const mailIndex = paramsFilteredMails.findIndex(i => i.id === newEmail.id);
+    mailIndex > 0 ? (newEmail.hasPreviousMail = true) : (newEmail.hasPreviousMail = false);
+    mailIndex < paramsFilteredMails.length - 1 ? (newEmail.hasNextMail = true) : (newEmail.hasNextMail = false);
   }
 
-  return newEmail ? res.status(200).send(newEmail) : res.status(404).send('Email not found.')
-})
-
-
-
-
-
-
-
-
-
-
+  return newEmail ? res.status(200).json(newEmail) : res.sendStatus(404);
+});
 
 export default router;
