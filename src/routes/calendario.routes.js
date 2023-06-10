@@ -8,8 +8,6 @@ router.get('/calendar/events', async (req, res) => {
   try {
     const { calendars} = req.query;
 
-    console.log( calendars)
-
     const query = `
       SELECT *
       FROM calendar
@@ -32,7 +30,6 @@ router.get('/calendar/events', async (req, res) => {
       }
     }));
 
-    console.log(transformedEvents)
 
     res.status(200).json(transformedEvents);
   } catch (error) {

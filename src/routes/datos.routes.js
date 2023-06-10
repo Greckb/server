@@ -37,11 +37,11 @@ router.get('/data', async (req, res) => {
                     // }
                 // ]
             },
-            // {
-            //     title: 'Email',
-            //     icon: 'mdi:email-outline',
-            //     path: '/apps/email'
-            //   },
+            {
+                title: 'Email',
+                icon: 'mdi:email-outline',
+                path: '/apps/email'
+              },
             {
                 path: '/apps/remesas/lista',
                 title: 'Remesas',
