@@ -1,10 +1,12 @@
-import {createPool} from 'mysql2/promise';
+import { createPool } from 'mysql2/promise';
+import dotenv from 'dotenv';
 
-export const pool  = createPool({
-    host: '178.211.133.14',
-    user: 'zftuyhpu_juanjo',
-    password: 'Surf&Roll1',
-    port: 3306,
-    database: 'zftuyhpu_gimnasio',
-    })
-    
+dotenv.config(); // Cargar variables de entorno desde el archivo .env
+
+export const pool = createPool({
+    host: process.env.host_db,
+    user: process.env.user_db,
+    password: process.env.password_db,
+    port: process.env.port_db,
+    database: process.env.database,
+});

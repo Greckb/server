@@ -19,6 +19,7 @@ router.get('/remesas/:id', async (req, res) => {
     const query = 'SELECT Factura_cliente.*, CLIENTES.Nombre AS cliente_nombre, CLIENTES.BIC, CLIENTES.IBAN FROM Factura_cliente INNER JOIN CLIENTES ON Factura_cliente.cliente_id = CLIENTES.idcliente WHERE Factura_cliente.id = ?';
 
     const result = await pool.query(query, [clientId]);
+    console.log(result[0])
     let totalCuotas = result[0].reduce((acumulador, pago) => {
         return acumulador + parseFloat(pago.cuota);
     }, 0);
@@ -43,8 +44,10 @@ router.get('/remesas/:id', async (req, res) => {
 
     };
     const miarray = result[0].map((result, index) => {
-        const paddedId = result.id.toString().padStart(5, '0');
+        
         const mandateNumber = index + 1;
+        const clienteIdNumerico = parseInt(result.cliente_id.slice(4), 10); // Extraer los 4 dígitos después de "ESI-" y convertirlos en número
+        const paddedId = clienteIdNumerico.toString().padStart(4, '0'); // Asegurar que tenga 4 dígitos agregando ceros a la izquierda si es necesario
         return {
             endToEndId: mandateNumber,
             currency: "EUR",
@@ -76,7 +79,7 @@ router.get('/remesas/:id', async (req, res) => {
     });
 
 
-    const archivo = generarXML(miarray, datos)
+     const archivo = generarXML(miarray, datos)
     res.send(archivo)
 
 });

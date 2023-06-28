@@ -10,10 +10,6 @@ import correo from './routes/correo.routes.js';
 import notas from './routes/notas.routes.js';
 import calendario from './routes/calendario.routes.js';
 import profile from './routes/profile.routes.js';
-import https from 'https';
-import fs from 'fs';
-import { writeFileSync } from 'fs';
-import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
@@ -67,14 +63,3 @@ app.get('/',(req,res)=> res.send('hello'))
 const port = process.env.PORT || 8080;
 app.listen(port, () => console.log(`Listening on port ${port}..`));
 
-// Opciones para el servidor HTTPS
-// const options = {
-//   key: fs.readFileSync('/home/ubuntu/ssl/clave-privada.key'),
-//   cert: fs.readFileSync('/home/ubuntu/proyecto/server/src/ssl/certificado.crt')
-// };
-
-// const httpsServer = https.createServer(options, app);
-
-// httpsServer.listen(8443, () => {
-//   console.log('Servidor Node iniciado en el puerto 8443 (HTTPS)');
-// });
