@@ -12,6 +12,16 @@ import builder from 'xmlbuilder';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Función para sumar un mes a una fecha dada y formatearla como "mes año"
+function addOneMonthToDate(dateString) {
+    const date = new Date(dateString);
+    date.setMonth(date.getMonth() + 1);
+    const year = date.getFullYear();
+    const month = date.toLocaleString('es', { month: 'long' });
+    return `${month} ${year}`;
+}
+
+
 
 //Generar el archivo XML SEPA
 router.get('/remesas/:id', async (req, res) => {
@@ -113,11 +123,15 @@ router.get('/factura/:id', async (req, res) => {
 
 router.post('/remesas', async (req, res) => {
     const idClientes = req.body;
-
+    const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    
     try {
         const ids = idClientes.map(id => `'${id}'`).join(',');
-        const query = `SELECT IdCliente, Nombre, Plan, Cuota, CuotaMensual,UltimoPago, ProximoPago FROM CLIENTES WHERE IdCliente IN (${ids})`;
+        
+        
+        const query = `SELECT IdCliente, Nombre, Plan, Cuota, CuotaMensual, UltimoPago, ProximoPago FROM CLIENTES WHERE IdCliente IN (${ids})`;
         const [rows, fields] = await pool.query(query);
+        
 
         // Obtener el valor máximo actual de id en la tabla Factura_cliente
         const [[{ maxId }]] = await pool.query('SELECT MAX(id) AS maxId FROM Factura_cliente');
@@ -132,7 +146,7 @@ router.post('/remesas', async (req, res) => {
                 CuotaMensual,
             ];
         });
-
+        
         // Insertar los nuevos valores en la tabla Factura_cliente
         const insertQuery = 'INSERT INTO Factura_cliente (id, fecha_pago, cliente_id, cuota) VALUES ?';
         await pool.query(insertQuery, [newValues]);
@@ -152,13 +166,24 @@ router.post('/remesas', async (req, res) => {
         // Insertar los nuevos valores en la tabla Remesas
         const insertQuery2 = 'INSERT INTO Remesas (id, fecha_creacion, factura_id, cuota, num_clientes) VALUES ?';
         await pool.query(insertQuery2, [newValues2]);
+
+        // Actualizar los valores de UltimoPago y ProximoPago en la tabla CLIENTES
+        const updatedRows = rows.map(({ IdCliente, UltimoPago, ProximoPago }) => {
+            const newUltimoPago = ProximoPago; // Valor anterior de ProximoPago
+            const newProximoPago = addOneMonthToDate(ProximoPago); // Sumar un mes al valor anterior de ProximoPago y formatear como "mes año"
+            
+            return `UPDATE CLIENTES SET UltimoPago='${newUltimoPago}', ProximoPago='${newProximoPago}' WHERE IdCliente='${IdCliente}'`;
+        });
+
+        
+
+        for (const updateQuery of updatedRows) {
+            await pool.query(updateQuery);
+        }
+
         const value = newValues2[0][0];
         res.status(200).send({ value });
-
-
-
     } catch (error) {
-
         res.status(500).send('Error en el servidor');
     }
 });
