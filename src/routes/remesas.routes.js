@@ -13,13 +13,21 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Función para sumar un mes a una fecha dada y formatearla como "mes año"
-function addOneMonthToDate(dateString) {
+function addTimeToDate(dateString, timeType, increment) {
     const date = new Date(dateString);
-    date.setMonth(date.getMonth() + 1);
+  
+    if (timeType === 'month') {
+      date.setMonth(date.getMonth() + increment);
+    } else if (timeType === 'quarter') {
+      date.setMonth(date.getMonth() + increment * 3);
+    } else if (timeType === 'year') {
+      date.setFullYear(date.getFullYear() + increment);
+    }
+  
     const year = date.getFullYear();
     const month = date.toLocaleString('es', { month: 'long' });
     return `${month} ${year}`;
-}
+  }
 
 
 
@@ -168,12 +176,20 @@ router.post('/remesas', async (req, res) => {
         await pool.query(insertQuery2, [newValues2]);
 
         // Actualizar los valores de UltimoPago y ProximoPago en la tabla CLIENTES
-        const updatedRows = rows.map(({ IdCliente, UltimoPago, ProximoPago }) => {
-            const newUltimoPago = ProximoPago; // Valor anterior de ProximoPago
-            const newProximoPago = addOneMonthToDate(ProximoPago); // Sumar un mes al valor anterior de ProximoPago y formatear como "mes año"
-            
+        const updatedRows = rows.map(({ IdCliente, UltimoPago, ProximoPago, Plan }) => {
+            let newUltimoPago = ProximoPago; // Valor anterior de ProximoPago
+            let newProximoPago = ProximoPago; // Valor anterior de ProximoPago
+          
+            if (Plan === 'Mensual') {
+              newProximoPago = addTimeToDate(ProximoPago, 'month', 1);
+            } else if (Plan === 'Trimestral') {
+              newProximoPago = addTimeToDate(ProximoPago, 'quarter', 1);
+            } else if (Plan === 'Anual') {
+              newProximoPago = addTimeToDate(ProximoPago, 'year', 1);
+            }
+          
             return `UPDATE CLIENTES SET UltimoPago='${newUltimoPago}', ProximoPago='${newProximoPago}' WHERE IdCliente='${IdCliente}'`;
-        });
+          });
 
         
 
