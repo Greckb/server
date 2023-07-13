@@ -1,6 +1,8 @@
 // correo.routes.js
 import express from 'express';
 import nodemailer from 'nodemailer';
+import { htmlToText } from 'html-to-text';
+
 
 const router = express.Router();
 
@@ -31,15 +33,17 @@ const transporter = nodemailer.createTransport({
 router.post('/enviar-correo', (req, res) => {
   const { destinatario, asunto, contenido } = req.body;
 
+  // Convierte el contenido HTML en texto plano
+  const textContenido = htmlToText(contenido);
 
   // Configuración del correo
   const mailOptions = {
     from: 'info@esifitnesmataro.com',
     to: destinatario,
     subject: asunto,
-    text: contenido,
+    text: textContenido, // Usa el contenido convertido a texto plano
+    html: contenido, // Usa el contenido HTML enriquecido
   };
-
 
   // Envío del correo
   transporter.sendMail(mailOptions, (error, info) => {
