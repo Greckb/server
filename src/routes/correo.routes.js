@@ -12,8 +12,8 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: '',
-    pass: '',
+    user: 'info@esifitnesmataro.com',
+    pass: '0zOsXG5]eYbr',
   },
   logger: true,
   transactionLog: true, // include SMTP traffic in the logs
@@ -34,7 +34,7 @@ router.post('/enviar-correo', (req, res) => {
   const { destinatario, asunto, contenido } = req.body;
 
   // Convierte el contenido HTML en texto plano
-  const textContenido = htmlToText(contenido);
+ const textContenido = htmlToText(contenido);
 
   // Configuración del correo
   const mailOptions = {
@@ -43,6 +43,31 @@ router.post('/enviar-correo', (req, res) => {
     subject: asunto,
     text: textContenido, // Usa el contenido convertido a texto plano
     html: contenido, // Usa el contenido HTML enriquecido
+  };
+
+  // Envío del correo
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(error);
+      res.status(500).json({ message: 'Error al enviar el correo' });
+    } else {
+      console.log('Correo enviado:', info.response);
+      res.status(200).json({ message: 'Correo enviado exitosamente' });
+    }
+  });
+});
+
+router.post('/enviar-correo-remesa', (req, res) => {
+  const { destinatario, asunto, contenido } = req.body;
+
+
+  // Configuración del correo
+  const mailOptions = {
+    from: 'info@esifitnesmataro.com',
+    to: destinatario,
+    subject: asunto,
+    text: contenido, // Usa el contenido convertido a texto plano
+  
   };
 
   // Envío del correo
