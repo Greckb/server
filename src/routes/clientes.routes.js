@@ -342,7 +342,7 @@ router.get('/nombre-de-emails', async (req, res) => {
     // Extraer los datos de la consulta
     const data = result[0].map(row => ({ Nombre: row.Nombre, Email: row.Email }));
 
-    console.log(data)
+    
     // Enviar los datos en la respuesta
     res.status(200).json({ data });
   } catch (error) {
