@@ -339,15 +339,18 @@ router.get('/nombre-de-emails', async (req, res) => {
     // Realizar la consulta a la base de datos
     const result = await pool.query('SELECT Nombre, Email FROM CLIENTES');
 
-    
+    // Extraer los datos de la consulta
+    const data = result[0].map(row => ({ Nombre: row.Nombre, Email: row.Email }));
 
+    console.log(data)
     // Enviar los datos en la respuesta
-    res.status(200).json({ result });
+    res.status(200).json({ data });
   } catch (error) {
     console.error('Error al consultar la base de datos:', error);
     res.status(500).json({ message: 'Error al consultar la base de datos' });
   }
 });
+
 
 
 
