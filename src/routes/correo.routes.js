@@ -5,7 +5,6 @@ import { htmlToText,convert } from 'html-to-text';
 
 
 import multer from "multer";
-import { JSDOM } from 'jsdom';
 import createDOMPurify from 'dompurify';
 
 import { fileURLToPath } from 'url';
