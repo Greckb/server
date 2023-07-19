@@ -2,6 +2,8 @@
 import express from 'express';
 import nodemailer from 'nodemailer';
 import { htmlToText,convert } from 'html-to-text';
+import fs from "fs";
+import { pool } from '../db.js'
 
 
 import multer from "multer";
@@ -26,7 +28,7 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: '',
+    user: 'info@esifitnesmataro.com',
     pass: '0zOsXG5]eYbr',
   },
   logger: true,
@@ -69,6 +71,8 @@ router.post('/enviar-correo', (req, res) => {
     // Los datos del formulario (destinatario, asunto, contenido) estarán en req.body
     const { destinatario, asunto, contenido } = req.body;
 
+  
+
  
     // Verificar si se adjuntó un archivo
     let adjunto;
@@ -90,7 +94,7 @@ router.post('/enviar-correo', (req, res) => {
       attachments: adjunto ? [adjunto] : [], // Adjuntar el archivo si existe
     };
 
-    console.log(mailOptions)
+    
 
     // Enviar el correo electrónico
     transporter.sendMail(mailOptions, (error, info) => {
@@ -100,10 +104,22 @@ router.post('/enviar-correo', (req, res) => {
       }
 
       console.log('Correo enviado:', info.response);
+
+      // Eliminar el archivo adjunto si existe
+      if (adjunto) {
+        try {
+          fs.unlinkSync(adjunto.path);
+          console.log('Archivo adjunto eliminado');
+        } catch (error) {
+          console.error('Error al eliminar el archivo adjunto:', error);
+        }
+      }
+
       res.status(200).json({ message: 'Correo enviado exitosamente' });
     });
   });
 });
+
 
 
 
@@ -131,6 +147,49 @@ router.post('/enviar-correo-remesa', (req, res) => {
     }
   });
 });
+
+router.get('/nombre-de-emails', async (req, res) => {
+  try {
+    // Realizar la consulta a la base de datos
+    const result = await pool.query('SELECT Nombre, Email, Estado FROM CLIENTES');
+
+    // Extraer los datos de la consulta
+    const data = result[0].map(row => ({ name: row.Nombre, value: row.Email, src: '', estado: row.Estado }));
+
+    // Obtener todos los correos electrónicos en un array
+    const allEmails = data.map(item => item.value);
+
+    // Crear el objeto adicional con el valor 'todos'
+    const todosEmails = { name: 'todos', value: allEmails, estado: 'Activo' };
+
+    // Filtrar correos electrónicos por estado 'Activo'
+    const activosEmails = data.filter(item => item.estado === 'Activo').map(item => item.value);
+
+    // Crear el objeto adicional con el valor 'Activos'
+    const activosEmailsObject = { name: 'Activos', value: activosEmails, estado: 'Activo' };
+
+    // Filtrar correos electrónicos por estado 'Baja'
+    const bajaEmails = data.filter(item => item.estado === 'Baja').map(item => item.value);
+
+    // Crear el objeto adicional con el valor 'Baja'
+    const bajaEmailsObject = { name: 'Baja', value: bajaEmails, estado: 'Baja' };
+
+    // Agregar los objetos 'todosEmails', 'activosEmailsObject' y 'bajaEmailsObject' al array 'data'
+    data.push(todosEmails, activosEmailsObject, bajaEmailsObject);
+
+    // Eliminar la propiedad "estado" de los objetos en el array "data"
+    data.forEach(item => delete item.estado);
+
+    // Enviar los datos en la respuesta
+    res.status(200).json({ data });
+  } catch (error) {
+    console.error('Error al consultar la base de datos:', error);
+    res.status(500).json({ message: 'Error al consultar la base de datos' });
+  }
+});
+
+
+
 
 
 
