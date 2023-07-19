@@ -26,7 +26,7 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: 'info@esifitnesmataro.com',
+    user: '',
     pass: '0zOsXG5]eYbr',
   },
   logger: true,
