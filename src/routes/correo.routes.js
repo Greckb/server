@@ -28,8 +28,8 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: '',
-    pass: '',
+    user: 'info@esifitnesmataro.com',
+    pass: '0zOsXG5]eYbr',
   },
   logger: true,
   transactionLog: true, // include SMTP traffic in the logs
@@ -61,51 +61,38 @@ const upload = multer({ storage }).single('adjunto');
 router.post('/enviar-correo', (req, res) => {
   upload(req, res, (err) => {
     if (err instanceof multer.MulterError) {
-      // Ocurrió un error al subir el archivo
       return res.status(500).json({ message: 'Error al adjuntar el archivo' });
     } else if (err) {
-      // Ocurrió otro tipo de error
       return res.status(500).json({ message: 'Error en el servidor' });
     }
 
-    // Los datos del formulario (destinatario, asunto, contenido) estarán en req.body
-    const { destinatario, asunto, contenido } = req.body;
+    const { destinatario, asunto, contenido, cc, bcc } = req.body; // Agregar cc y bcc
 
-  
-
- 
-    // Verificar si se adjuntó un archivo
     let adjunto;
     if (req.file) {
-      // El archivo adjunto está en req.file
       adjunto = {
         filename: req.file.originalname,
         path: req.file.path,
       };
     }
 
-    // Configurar los datos del correo electrónico
     const mailOptions = {
       from: 'info@esifitnesmataro.com',
       to: destinatario,
       subject: asunto,
-      text: htmlToText(contenido), // Convertir el contenido HTML a texto plano
+      text: htmlToText(contenido),
       html: contenido,
-      attachments: adjunto ? [adjunto] : [], // Adjuntar el archivo si existe
+      attachments: adjunto ? [adjunto] : [],
+      cc: cc ? cc.split(',') : [], // Agregar CC
+      bcc: bcc ? bcc.split(',') : [], // Agregar BCC
     };
 
-    
-
-    // Enviar el correo electrónico
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error('Error al enviar el correo:', error);
         return res.status(500).json({ message: 'Error al enviar el correo' });
       }
 
-      console.log('Correo enviado:', info.response);
-
-      // Eliminar el archivo adjunto si existe
       if (adjunto) {
         try {
           fs.unlinkSync(adjunto.path);
@@ -119,6 +106,7 @@ router.post('/enviar-correo', (req, res) => {
     });
   });
 });
+
 
 
 
