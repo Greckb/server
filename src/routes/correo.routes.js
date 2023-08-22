@@ -13,7 +13,6 @@ import { fileURLToPath } from 'url';
 import path from "path";
 
 
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -77,7 +76,7 @@ router.post('/enviar-correo', (req, res) => {
     }
 
     const mailOptions = {
-      from: 'info@esifitnesmataro.com',
+      from: 'Esifitnes Mataro <info@esifitnesmataro.com>',
       to: destinatario,
       subject: asunto,
       text: htmlToText(contenido),
@@ -109,6 +108,77 @@ router.post('/enviar-correo', (req, res) => {
 
 
 
+router.post('/contrasena', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Buscar al cliente por su correo electrónico en la base de datos
+    const result = await pool.query('SELECT * FROM CLIENTES WHERE Email = ?', [email]);
+    
+    if (result.length === 0) {
+      return res.status(404).json({ message: 'Cliente no encontrado' });
+    }
+
+    const contraseña = result[0][0].password;
+    const nombre = result[0][0].Nombre
+
+    // Configurar el correo electrónico
+    const mailOptions = {
+      from: 'Esifitnes Mataro <info@esifitnesmataro.com>',
+      to: email,
+      subject: 'Recuperación de contraseña',
+      html: `
+        <html>
+        <head>
+          <style>
+            body {
+              line-height: 1;
+            }
+          </style>
+        </head>
+        <body>
+          <p>Estimado ${nombre},</p>
+          <br>
+          <p>Has olvidado tu contraseña?</p>
+          <p>Este es tu email: <strong>${email}</strong></p>
+          <p>y tu contraseña es...<strong>${contraseña}</strong></p>
+          <br><br>
+          <p><strong>Si no solicitaste la recuperación de la contraseña o tienes más problemas para iniciar sesión, por favor contacta con el soporte en <a href="mailto:info@esifitnesmataro.com">info@esifitnesmataro.com</a>.</strong></p>
+          <br><br>
+          <img src="https://www.esifitnesmataro.com/_next/static/media/logo_esi.24fdf57a.png" alt="Logo de Esimataro" width="150">
+          <p>Ronda Sant Oleguer, 73</p>
+          <p>08830 Mataro, Barcelona</p>
+          <p>Tel. 649 909551/ 625 854776</p>
+          <a href="https://www.esifitnesmataro.com">EsiFitnes Mataro</a>
+          <br>
+        </body>
+        </html>
+      `,
+    };
+    
+    
+    
+
+    // Enviar el correo electrónico
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error al enviar el correo:', error);
+        return res.status(500).json({ message: 'Error al enviar el correo' });
+      }
+
+      console.log('Correo enviado:', info.response);
+
+      res.status(200).json({ message: 'Contraseña enviada exitosamente por correo electrónico' });
+    });
+  } catch (error) {
+    console.error('Error en la petición:', error);
+    res.status(500).json({ message: 'Error en la petición' });
+  }
+});
+
+
+
+
 
 
 router.post('/enviar-correo-remesa', (req, res) => {
@@ -117,7 +187,7 @@ router.post('/enviar-correo-remesa', (req, res) => {
 
   // Configuración del correo
   const mailOptions = {
-    from: 'info@esifitnesmataro.com',
+    from: 'Esimataro <info@esifitnesmataro.com>',
     to: destinatario,
     subject: asunto,
     text: contenido, // Usa el contenido convertido a texto plano
