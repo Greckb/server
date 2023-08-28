@@ -1,7 +1,7 @@
 // correo.routes.js
 import express from 'express';
 import nodemailer from 'nodemailer';
-import { htmlToText,convert } from 'html-to-text';
+import { htmlToText, convert } from 'html-to-text';
 import fs from "fs";
 import { pool } from '../db.js'
 
@@ -34,16 +34,17 @@ const transporter = nodemailer.createTransport({
   transactionLog: true, // include SMTP traffic in the logs
   allowInternalNetworkInterfaces: false
 },
-{
-  // default message fields
+  {
+    // default message fields
 
-  // sender info
-  from: 'Info <info@esifitnesmataro.com>',
-  headers: {
+    // sender info
+    from: 'Info <info@esifitnesmataro.com>',
+    headers: {
       'X-Laziness-level': 1000 // just an example header, no need to use this
+    }
   }
-}
 );
+
 
 
 // Configurar Multer para guardar los archivos adjuntos en la carpeta /uploads
@@ -55,6 +56,48 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage }).single('adjunto');
+
+const contenidoHTML = `
+<html>
+<head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    .bold {
+        font-weight: bold;
+    }
+    .page-break {
+        page-break-before: always;
+    }
+</style>
+</head>
+<body>
+<Br><Br>
+<div class="page-break">
+<img src="https://www.esifitnesmataro.com/_next/static/media/logo_esi.24fdf57a.png" alt="Logo de Esimataro" width="200">
+    <p>El Responsable del Tratamiento <span class="bold">OELAP TRAINING SL</span>, en cumplimiento del Reglamento General de Protección de Datos UE-2016/679, de la LOPD 3/2018, de garantía de los derechos digitales, y por la Directiva UE-2016/943 y la Ley 1/2019, de Secretos Empresariales, le informa que sus datos serán tratados para la gestión administrativa, contable, la prestación del servicio ofertado y el envío de información por <span class="bold">OELAP TRAINING SL</span>. No se cederán a terceros, salvo por obligación legal, pudiendo ejercer sus derechos de acceso, rectificación, supresión, oposición, portabilidad y limitación en <span class="bold">OELAP TRAINING SL</span>:</p>
+    <p><span class="bold">RONDA SANT OLEGUER, 73, LOCAL. 08304, MATARO (BARCELONA).</span> <a href="mailto:dpd@grupqualia.com">dpd@grupqualia.com</a>.</p>
+</div>
+
+<div class="page-break">
+    <p class="bold">AVISO DE CONFIDENCIALIDAD:</p>
+    <p>De conformidad con lo establecido en el Reglamento General -UE- 2016/679, la LOPD 3/2018, de garantía de los derechos digitales, la Ley 34/2002, de Servicios de la Sociedad de la Información y el Comercio Electrónico, la Ley 9/2014, General de Telecomunicaciones y la Ley 1/2019, de Secretos Empresariales, le informamos que sus datos son tratados con la finalidad de gestionar los servicios contratados y mandarle información de nuestra entidad, <span class="bold">OELAP TRAINING SL</span></p>
+</div>
+
+<div class="page-break">
+    <p>Este mensaje y sus archivos van dirigidos exclusivamente a su destinatario, pudiendo contener información confidencial sometida a secreto profesional. No está permitida su reproducción o distribución sin la autorización expresa de <span class="bold">OELAP TRAINING SL</span>. Si usted no es el destinatario final, por favor, elimínelo e infórmenos por esta vía.</p>
+    <p>Le informamos la posibilidad de ejercer los derechos de acceso, rectificación, oposición, supresión, limitación y portabilidad de sus datos ante <span class="bold">OELAP TRAINING SL</span>:</p>
+    <p><span class="bold">RONDA SANT OLEGUER, 73, LOCAL. 08304, MATARO (BARCELONA).</span> <a href="mailto:dpd@grupqualia.com">dpd@grupqualia.com</a></p>
+</div>
+
+<div class="page-break">
+    <p>Si usted no desea recibir nuestra información, póngase en contacto con nosotros enviando un correo electrónico a la siguiente dirección: <a href="mailto:esifitnesmataro@gmail.com">esifitnesmataro@gmail.com</a></p>
+</div>
+</body>
+</html>
+
+    `;
 
 
 router.post('/enviar-correo', (req, res) => {
@@ -75,12 +118,14 @@ router.post('/enviar-correo', (req, res) => {
       };
     }
 
+    const newContenido = contenido + contenidoHTML;
+
     const mailOptions = {
       from: 'Esifitnes Mataro <info@esifitnesmataro.com>',
       to: destinatario,
       subject: asunto,
-      text: htmlToText(contenido),
-      html: contenido,
+      text: htmlToText(newContenido),
+      html: newContenido,
       attachments: adjunto ? [adjunto] : [],
       cc: cc ? cc.split(',') : [], // Agregar CC
       bcc: bcc ? bcc.split(',') : [], // Agregar BCC
@@ -114,7 +159,7 @@ router.post('/contrasena', async (req, res) => {
   try {
     // Buscar al cliente por su correo electrónico en la base de datos
     const result = await pool.query('SELECT * FROM CLIENTES WHERE Email = ?', [email]);
-    
+
     if (result.length === 0) {
       return res.status(404).json({ message: 'Cliente no encontrado' });
     }
@@ -128,16 +173,23 @@ router.post('/contrasena', async (req, res) => {
       to: email,
       subject: 'Recuperación de contraseña',
       html: `
-        <html>
-        <head>
-          <style>
-            body {
-              line-height: 1;
-            }
-          </style>
-        </head>
-        <body>
-          <p>Estimado ${nombre},</p>
+<html>
+<head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    .bold {
+        font-weight: bold;
+    }
+    .page-break {
+        page-break-before: always;
+    }
+</style>
+</head>
+<body>
+<div class="page-break">
+<p>Estimado ${nombre},</p>
           <br>
           <p>Has olvidado tu contraseña?</p>
           <p>Este es tu email: <strong>${email}</strong></p>
@@ -145,19 +197,35 @@ router.post('/contrasena', async (req, res) => {
           <br><br>
           <p><strong>Si no solicitaste la recuperación de la contraseña o tienes más problemas para iniciar sesión, por favor contacta con el soporte en <a href="mailto:info@esifitnesmataro.com">info@esifitnesmataro.com</a>.</strong></p>
           <br><br>
-          <img src="https://www.esifitnesmataro.com/_next/static/media/logo_esi.24fdf57a.png" alt="Logo de Esimataro" width="150">
-          <p>Ronda Sant Oleguer, 73</p>
-          <p>08830 Mataro, Barcelona</p>
-          <p>Tel. 649 909551/ 625 854776</p>
-          <a href="https://www.esifitnesmataro.com">EsiFitnes Mataro</a>
-          <br>
-        </body>
-        </html>
+          </div>
+<div class="page-break">
+<img src="https://www.esifitnesmataro.com/_next/static/media/logo_esi.24fdf57a.png" alt="Logo de Esimataro" width="200">
+    <p>El Responsable del Tratamiento <span class="bold">OELAP TRAINING SL</span>, en cumplimiento del Reglamento General de Protección de Datos UE-2016/679, de la LOPD 3/2018, de garantía de los derechos digitales, y por la Directiva UE-2016/943 y la Ley 1/2019, de Secretos Empresariales, le informa que sus datos serán tratados para la gestión administrativa, contable, la prestación del servicio ofertado y el envío de información por <span class="bold">OELAP TRAINING SL</span>. No se cederán a terceros, salvo por obligación legal, pudiendo ejercer sus derechos de acceso, rectificación, supresión, oposición, portabilidad y limitación en <span class="bold">OELAP TRAINING SL</span>:</p>
+    <p><span class="bold">RONDA SANT OLEGUER, 73, LOCAL. 08304, MATARO (BARCELONA).</span> <a href="mailto:dpd@grupqualia.com">dpd@grupqualia.com</a>.</p>
+</div>
+
+<div class="page-break">
+    <p class="bold">AVISO DE CONFIDENCIALIDAD:</p>
+    <p>De conformidad con lo establecido en el Reglamento General -UE- 2016/679, la LOPD 3/2018, de garantía de los derechos digitales, la Ley 34/2002, de Servicios de la Sociedad de la Información y el Comercio Electrónico, la Ley 9/2014, General de Telecomunicaciones y la Ley 1/2019, de Secretos Empresariales, le informamos que sus datos son tratados con la finalidad de gestionar los servicios contratados y mandarle información de nuestra entidad, <span class="bold">OELAP TRAINING SL</span></p>
+</div>
+
+<div class="page-break">
+    <p>Este mensaje y sus archivos van dirigidos exclusivamente a su destinatario, pudiendo contener información confidencial sometida a secreto profesional. No está permitida su reproducción o distribución sin la autorización expresa de <span class="bold">OELAP TRAINING SL</span>. Si usted no es el destinatario final, por favor, elimínelo e infórmenos por esta vía.</p>
+    <p>Le informamos la posibilidad de ejercer los derechos de acceso, rectificación, oposición, supresión, limitación y portabilidad de sus datos ante <span class="bold">OELAP TRAINING SL</span>:</p>
+    <p><span class="bold">RONDA SANT OLEGUER, 73, LOCAL. 08304, MATARO (BARCELONA).</span> <a href="mailto:dpd@grupqualia.com">dpd@grupqualia.com</a></p>
+</div>
+
+<div class="page-break">
+    <p>Si usted no desea recibir nuestra información, póngase en contacto con nosotros enviando un correo electrónico a la siguiente dirección: <a href="mailto:esifitnesmataro@gmail.com">esifitnesmataro@gmail.com</a></p>
+</div>
+</body>
+</html>
+
       `,
     };
-    
-    
-    
+
+
+
 
     // Enviar el correo electrónico
     transporter.sendMail(mailOptions, (error, info) => {
@@ -191,7 +259,7 @@ router.post('/enviar-correo-remesa', (req, res) => {
     to: destinatario,
     subject: asunto,
     text: contenido, // Usa el contenido convertido a texto plano
-  
+
   };
 
   // Envío del correo
