@@ -4,5 +4,5 @@ import dotenv from 'dotenv';
 dotenv.config(); // Cargar variables de entorno desde el archivo .env
 
 export const pool = createPool({
-   
+
 });
