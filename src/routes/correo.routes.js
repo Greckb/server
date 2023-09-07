@@ -115,13 +115,16 @@ router.post('/enviar-correo', (req, res) => {
     const adjuntos = [
       {
         filename: 'NORMAS ADMINISTRATIVAS.PDF',
-        path: '~/server/src/public/NORMAS_ADMINISTRATIVAS.PDF', // Ruta en DigitalOcean
+        path: 'NORMAS_ADMINISTRATIVAS.PDF', // Nombre de archivo relativo a la carpeta 'public'
       },
       {
         filename: 'PROTECCION DATOS PARA USUARIOS.docx',
-        path: '~/server/src/public/PROTECCION_DATOS.docx', // Ruta en DigitalOcean
+        path: 'PROTECCION_DATOS.docx', // Nombre de archivo relativo a la carpeta 'public'
       },
     ];
+
+ 
+    
     
 
     let adjunto;

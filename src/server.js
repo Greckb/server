@@ -31,6 +31,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// Configurar middleware para archivos estáticos
+app.use(express.static(path.join(__dirname, 'src/public')));
+
 (async function () {
   try {
     await pool.getConnection();
