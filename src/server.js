@@ -27,12 +27,13 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'],
   preflightContinue: false,
   optionsSuccessStatus: 204,
+  
 };
 
 app.use(cors(corsOptions));
 
 // Configurar middleware para archivos estáticos
-app.use(express.static(path.join(__dirname, 'server/src/public')));
+app.use(express.static(path.join(__dirname, '~/server/src/public')));
 
 (async function () {
   try {

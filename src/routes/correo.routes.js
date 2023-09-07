@@ -9,7 +9,7 @@ import { pool } from '../db.js'
 import multer from "multer";
 import createDOMPurify from 'dompurify';
 
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import path from "path";
 
 
@@ -124,6 +124,7 @@ router.post('/enviar-correo', (req, res) => {
     ];
 
  
+    
     
     
 
