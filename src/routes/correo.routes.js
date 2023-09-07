@@ -112,6 +112,17 @@ router.post('/enviar-correo', (req, res) => {
 
     const { destinatario, asunto, contenido, cc, bcc } = req.body; // Agregar cc y bcc
 
+    const adjuntos = [
+      {
+        filename: 'NORMAS ADMINISTRATIVAS.PDF',
+        path: '~/server/src/public/NORMAS_ADMINISTRATIVAS.PDF', // Ruta absoluta al archivo PDF
+      },
+      {
+        filename: 'PROTECCION DATOS PARA USUARIOS.docx',
+        path: '~/server/src/public/PROTECCION_DATOS.docx', // Ruta absoluta al archivo DOCX
+      },
+    ];
+
     let adjunto;
     if (req.file) {
       adjunto = {
@@ -128,7 +139,8 @@ router.post('/enviar-correo', (req, res) => {
       subject: asunto,
       text: htmlToText(newContenido),
       html: newContenido,
-      attachments: adjunto ? [adjunto] : [],
+      // attachments: adjunto ? [adjunto] : [],
+      attachments: adjuntos,
       cc: cc ? cc.split(',') : [], // Agregar CC
       bcc: bcc ? bcc.split(',') : [], // Agregar BCC
     };
