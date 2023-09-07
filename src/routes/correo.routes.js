@@ -75,7 +75,7 @@ const contenidoHTML = `
 <body>
 <Br><Br>
 <div class="page-break">
-<img src="https://www.esifitnesmataro.com/images/Logo_copia.png" alt="Logo de Esimataro" width="75">
+<img src="https://www.esifitnesmataro.com/images/Logo_copia.png" alt="Logo de Esimataro" width="150">
     <p>El Responsable del Tratamiento <span class="bold">OELAP TRAINING SL</span>, en cumplimiento del Reglamento General de Protección de Datos UE-2016/679, de la LOPD 3/2018, de garantía de los derechos digitales, y por la Directiva UE-2016/943 y la Ley 1/2019, de Secretos Empresariales, le informa que sus datos serán tratados para la gestión administrativa, contable, la prestación del servicio ofertado y el envío de información por <span class="bold">OELAP TRAINING SL</span>. No se cederán a terceros, salvo por obligación legal, pudiendo ejercer sus derechos de acceso, rectificación, supresión, oposición, portabilidad y limitación en <span class="bold">OELAP TRAINING SL</span>:</p>
     <p><span class="bold">RONDA SANT OLEGUER, 73, LOCAL. 08304, MATARO (BARCELONA).</span> <a href="mailto:dpd@grupqualia.com">dpd@grupqualia.com</a>.</p>
 </div>
@@ -98,6 +98,8 @@ const contenidoHTML = `
 </html>
 
     `;
+
+
 
 
 router.post('/enviar-correo', (req, res) => {
@@ -136,6 +138,8 @@ router.post('/enviar-correo', (req, res) => {
         console.error('Error al enviar el correo:', error);
         return res.status(500).json({ message: 'Error al enviar el correo' });
       }
+
+      
 
       if (adjunto) {
         try {
@@ -312,6 +316,90 @@ router.get('/nombre-de-emails', async (req, res) => {
     console.error('Error al consultar la base de datos:', error);
     res.status(500).json({ message: 'Error al consultar la base de datos' });
   }
+});
+
+
+router.post('/correobienvenida', (req, res) => {
+  upload(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      return res.status(500).json({ message: 'Error al adjuntar el archivo' });
+    } else if (err) {
+      return res.status(500).json({ message: 'Error en el servidor' });
+    }
+
+    // const { destinatario, nombre } = req.body; // Agregar cc y bcc
+
+    const destinatario = 'luar.28@gmail.com'
+    const nombre = 'Raul'
+    
+    // Contenido del mensaje de bienvenida en HTML
+    const contenidobienvenida = `
+    <!DOCTYPE html>
+    <html>
+    
+    <head>
+        <title>Bienvenido a Esi Fitness</title>
+    </head>
+    
+    <body>
+        <p>Estimado/a ${nombre},</p>
+    
+        <p>Es un placer darle la bienvenida a Esi Fitness, su centro de bienestar y salud de confianza. Nos complace mucho que haya elegido unirse a nuestra comunidad. Estamos aquí para brindarle el mejor servicio y apoyo en su camino hacia una vida más saludable y activa.</p>
+    
+        <p>En Esi Fitness, nos enorgullece ofrecer un ambiente de calidad y excelencia en cada aspecto de su experiencia con nosotros. Si tiene alguna pregunta, sugerencia o necesidad, no dude en ponerse en contacto con nosotros. Estamos aquí para ayudarle en su viaje hacia el bienestar.</p>
+    
+        <p>Para comunicarse con nosotros, puede hacerlo a través del correo electrónico a la dirección: <a href="mailto:info@esifitnesmataro.com">info@esifitnesmataro.com</a>, o si lo prefiere, estamos disponibles por teléfono en el número: <a href="tel:+34989909551">649 909 551</a>. Estaremos encantados de atender sus consultas en cualquier momento.</p>
+    
+        <p>A continuación, le adjuntamos nuestras normas internas y nuestra política de protección de datos para su referencia. Le animamos a revisar estos documentos para comprender mejor nuestras políticas y compromisos con su seguridad y privacidad.</p>
+       
+        <p>Agradecemos la confianza que ha depositado en nosotros y esperamos que su experiencia en Esi Fitness sea enriquecedora y satisfactoria.</p>
+    
+        <p>Siempre estamos trabajando para mejorar y ofrecer un servicio de alta calidad a nuestros miembros. Si tiene alguna sugerencia o comentario, no dude en compartirla con nosotros. Valoramos su opinión.</p>
+    
+        <p>Una vez más, le damos la bienvenida a Esi Fitness y esperamos tener el placer de servirle pronto.</p>
+    
+        <p>Atentamente,</p>
+       
+        
+    </body>
+    
+    </html>
+    
+    `;
+
+    const adjuntos = [
+      {
+        filename: 'NORMAS ADMINISTRATIVAS.PDF',
+        path: 'src/public/NORMAS_ADMINISTRATIVAS.PDF', // Ruta absoluta al archivo PDF
+      },
+      {
+        filename: 'PROTECCION DATOS PARA USUARIOS.docx',
+        path: 'src/public/PROTECCION_DATOS.docx', // Ruta absoluta al archivo DOCX
+      },
+    ];
+
+    const newContenido = contenidobienvenida + contenidoHTML;
+
+    const mailOptions = {
+      from: 'Esifitnes Mataro <info@esifitnesmataro.com>',
+      to: destinatario,
+      subject: 'Bienvenido/a a Esi Fitness',
+      text: htmlToText(newContenido),
+      html: newContenido,
+      attachments: adjuntos, // Agregar los archivos adjuntos aquí
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error al enviar el correo:', error);
+        return res.status(500).json({ message: 'Error al enviar el correo' });
+      }
+
+     
+
+      res.status(200).json({ message: 'Correo enviado exitosamente' });
+    });
+  });
 });
 
 
