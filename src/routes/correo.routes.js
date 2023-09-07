@@ -145,7 +145,7 @@ router.post('/enviar-correo', (req, res) => {
       text: htmlToText(newContenido),
       html: newContenido,
       // attachments: adjunto ? [adjunto] : [],
-      attachments: adjuntos,
+      attachments: adjuntos ? [adjuntos] : [],
       cc: cc ? cc.split(',') : [], // Agregar CC
       bcc: bcc ? bcc.split(',') : [], // Agregar BCC
     };
