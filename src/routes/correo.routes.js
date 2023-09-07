@@ -187,7 +187,7 @@ router.post('/enviar-correo', (req, res) => {
     const archivoAdjunto1 = path.join(__dirname, '../public/NORMAS_ADMINISTRATIVAS.PDF');
     const archivoAdjunto2 = path.join(__dirname, '../public/PROTECCION_DATOS.docx');
     
-    console.log(archivoAdjunto1)
+    return res.status(500).json({ archivoAdjunto1 });
 
 
     // Leer los archivos adjuntos
