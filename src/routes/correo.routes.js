@@ -27,8 +27,7 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: 'info@esifitnesmataro.com',
-    pass: '0zOsXG5]eYbr',
+   
   },
   logger: true,
   transactionLog: true, // include SMTP traffic in the logs
