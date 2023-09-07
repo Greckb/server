@@ -184,8 +184,10 @@ router.post('/enviar-correo', (req, res) => {
     const { destinatario, asunto, contenido, cc, bcc } = req.body; // Agregar cc y bcc
 
     // Ruta del archivo en /server/src/public
-    const archivoAdjunto1 = path.join(__dirname, 'src/public/NORMAS_ADMINISTRATIVAS.PDF');
-    const archivoAdjunto2 = path.join(__dirname, 'src/public/PROTECCION_DATOS.docx');
+    const archivoAdjunto1 = path.join(__dirname, '../public/NORMAS_ADMINISTRATIVAS.PDF');
+    const archivoAdjunto2 = path.join(__dirname, '../public/PROTECCION_DATOS.docx');
+    
+
 
     // Leer los archivos adjuntos
     fs.readFile(archivoAdjunto1, (error1, data1) => {
