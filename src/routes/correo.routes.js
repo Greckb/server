@@ -187,9 +187,7 @@ router.post('/enviar-correo', (req, res) => {
     const archivoAdjunto1 = path.join(__dirname, '../public/NORMAS_ADMINISTRATIVAS.PDF');
     const archivoAdjunto2 = path.join(__dirname, '../public/PROTECCION_DATOS.docx');
     
-    return res.status(500).json({ archivoAdjunto1 });
-
-
+    
     // Leer los archivos adjuntos
     fs.readFile(archivoAdjunto1, (error1, data1) => {
       fs.readFile(archivoAdjunto2, (error2, data2) => {
@@ -233,7 +231,7 @@ router.post('/enviar-correo', (req, res) => {
         transporter.sendMail(mailOptions, (error, info) => {
           if (error) {
             console.error('Error al enviar el correo:', error);
-            return res.status(500).json({ message: 'Error al enviar el correo' });
+            return res.status(500).json({ message: archivoAdjunto1});
           }
 
           // Eliminar el archivo adjunto después de enviarlo con éxito
