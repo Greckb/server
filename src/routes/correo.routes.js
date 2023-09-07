@@ -102,6 +102,155 @@ const contenidoHTML = `
 
 
 
+// router.post('/enviar-correo', (req, res) => {
+//   upload(req, res, (err) => {
+//     if (err instanceof multer.MulterError) {
+//       return res.status(500).json({ message: 'Error al adjuntar el archivo' });
+//     } else if (err) {
+//       return res.status(500).json({ message: 'Error en el servidor' });
+//     }
+
+//     const { destinatario, asunto, contenido, cc, bcc } = req.body; // Agregar cc y bcc
+
+//     const adjuntos = [
+//       {
+//         filename: 'NORMAS ADMINISTRATIVAS.PDF',
+//         path: 'NORMAS_ADMINISTRATIVAS.PDF', // Nombre de archivo relativo a la carpeta 'public'
+//       },
+//       {
+//         filename: 'PROTECCION DATOS PARA USUARIOS.docx',
+//         path: 'PROTECCION_DATOS.docx', // Nombre de archivo relativo a la carpeta 'public'
+//       },
+//     ];
+
+    
+ 
+    
+    
+    
+
+//     let adjunto;
+//     if (req.file) {
+//       adjunto = {
+//         filename: req.file.originalname,
+//         path: req.file.path,
+//       };
+//     }
+
+//     const newContenido = contenido + contenidoHTML;
+
+//     const mailOptions = {
+//       from: 'Esifitnes Mataro <info@esifitnesmataro.com>',
+//       to: destinatario,
+//       subject: asunto,
+//       text: htmlToText(newContenido),
+//       html: newContenido,
+//       // attachments: adjunto ? [adjunto] : [],
+//       attachments: adjuntos ? [adjuntos] : [],
+//       cc: cc ? cc.split(',') : [], // Agregar CC
+//       bcc: bcc ? bcc.split(',') : [], // Agregar BCC
+//     };
+
+//     transporter.sendMail(mailOptions, (error, info) => {
+//       if (error) {
+//         console.error('Error al enviar el correo:', error);
+//         return res.status(500).json({ message: 'Error al enviar el correo' });
+//       }
+
+      
+
+//       if (adjunto) {
+//         try {
+//           fs.unlinkSync(adjunto.path);
+//           console.log('Archivo adjunto eliminado');
+//         } catch (error) {
+//           console.error('Error al eliminar el archivo adjunto:', error);
+//         }
+//       }
+
+//       res.status(200).json({ message: 'Correo enviado exitosamente' });
+//     });
+//   });
+// });
+
+router.post('/enviar-correo', (req, res) => {
+  upload(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      return res.status(500).json({ message: 'Error al adjuntar el archivo' });
+    } else if (err) {
+      return res.status(500).json({ message: 'Error en el servidor' });
+    }
+
+    const { destinatario, asunto, contenido, cc, bcc } = req.body; // Agregar cc y bcc
+
+    // Ruta del archivo en /server/src/public
+    const archivoAdjunto1 = path.join(__dirname, 'src/public/NORMAS_ADMINISTRATIVAS.PDF');
+    const archivoAdjunto2 = path.join(__dirname, 'src/public/PROTECCION_DATOS.docx');
+
+    // Leer los archivos adjuntos
+    fs.readFile(archivoAdjunto1, (error1, data1) => {
+      fs.readFile(archivoAdjunto2, (error2, data2) => {
+        if (error1 || error2) {
+          console.error('Error al leer uno o más archivos adjuntos:', error1 || error2);
+          return res.status(500).json({ message: 'Error al leer archivos adjuntos' });
+        }
+
+        const adjuntos = [
+          {
+            filename: 'NORMAS ADMINISTRATIVAS.PDF',
+            content: data1, // Contenido del primer archivo adjunto
+          },
+          {
+            filename: 'PROTECCION DATOS PARA USUARIOS.docx',
+            content: data2, // Contenido del segundo archivo adjunto
+          },
+        ];
+
+        let adjunto;
+        if (req.file) {
+          adjunto = {
+            filename: req.file.originalname,
+            path: req.file.path,
+          };
+        }
+
+        const newContenido = contenido + contenidoHTML;
+
+        const mailOptions = {
+          from: 'Esifitnes Mataro <info@esifitnesmataro.com>',
+          to: destinatario,
+          subject: asunto,
+          text: htmlToText(newContenido),
+          html: newContenido,
+          attachments: adjuntos, // Agregar archivos adjuntos
+          cc: cc ? cc.split(',') : [], // Agregar CC
+          bcc: bcc ? bcc.split(',') : [], // Agregar BCC
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.error('Error al enviar el correo:', error);
+            return res.status(500).json({ message: 'Error al enviar el correo' });
+          }
+
+          // Eliminar el archivo adjunto después de enviarlo con éxito
+          if (adjunto) {
+            try {
+              fs.unlinkSync(adjunto.path);
+              console.log('Archivo adjunto eliminado');
+            } catch (error) {
+              console.error('Error al eliminar el archivo adjunto:', error);
+            }
+          }
+
+          res.status(200).json({ message: 'Correo enviado exitosamente' });
+        });
+      });
+    });
+  });
+});
+
+
 router.post('/enviar-correo', (req, res) => {
   upload(req, res, (err) => {
     if (err instanceof multer.MulterError) {
@@ -123,6 +272,7 @@ router.post('/enviar-correo', (req, res) => {
       },
     ];
 
+    
  
     
     
