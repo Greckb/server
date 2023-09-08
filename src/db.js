@@ -4,6 +4,9 @@ import dotenv from 'dotenv';
 dotenv.config(); // Cargar variables de entorno desde el archivo .env
 
 export const pool = createPool({
-    host: '178.211.133.14',
-   
+    host: process.env.hostdb,
+    user: process.env.userdb,
+    password: process.env.passworddb,
+    port: process.env.port_db,
+    database: process.env.database,
 });

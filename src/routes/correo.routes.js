@@ -5,7 +5,7 @@ import { htmlToText, convert } from 'html-to-text';
 import fs from "fs";
 import { pool } from '../db.js'
 
-
+import dotenv from 'dotenv';
 import multer from "multer";
 import createDOMPurify from 'dompurify';
 
@@ -13,6 +13,7 @@ import { fileURLToPath, pathToFileURL } from 'url';
 import path from "path";
 
 
+dotenv.config(); // Cargar variables de entorno desde el archivo .env
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -23,26 +24,26 @@ const router = express.Router();
 
 // Configuración del transporte SMTP
 const transporter = nodemailer.createTransport({
-  host: 'com1004.raiolanetworks.es',
-  port: 465,
+  host: process.env.HOST,
+  port: process.env.smtpPort,
   secure: true,
   auth: {
-   
+      user: process.env.USERNAME,
+      pass: process.env.PASSWORD,
   },
   logger: true,
   transactionLog: true, // include SMTP traffic in the logs
-  allowInternalNetworkInterfaces: false
+  allowInternalNetworkInterfaces: false,
 },
-  {
-    // default message fields
+{
+  // default message fields
 
-    // sender info
-    from: 'Info <info@esifitnesmataro.com>',
-    headers: {
+  // sender info
+  from: 'Info <info@esifitnesmataro.com>',
+  headers: {
       'X-Laziness-level': 1000 // just an example header, no need to use this
-    }
   }
-);
+});
 
 
 
@@ -396,10 +397,9 @@ router.post('/correobienvenida', (req, res) => {
       return res.status(500).json({ message: 'Error en el servidor' });
     }
 
-    // const { destinatario, nombre } = req.body; // Agregar cc y bcc
+    const {  Nombre,  Email } = JSON.parse(req.body.data);
 
-    const destinatario = 'luar.28@gmail.com'
-    const nombre = 'Raul'
+    
     
     // Contenido del mensaje de bienvenida en HTML
     const contenidobienvenida = `
@@ -407,25 +407,25 @@ router.post('/correobienvenida', (req, res) => {
     <html>
     
     <head>
-        <title>Bienvenido a Esi Fitness</title>
+        <title>Bienvenido a EsiFitness</title>
     </head>
     
     <body>
-        <p>Estimado/a ${nombre},</p>
+        <p>Estimado/a ${Nombre},</p>
     
-        <p>Es un placer darle la bienvenida a Esi Fitness, su centro de bienestar y salud de confianza. Nos complace mucho que haya elegido unirse a nuestra comunidad. Estamos aquí para brindarle el mejor servicio y apoyo en su camino hacia una vida más saludable y activa.</p>
+        <p>Es un placer darle la bienvenida a EsiFitness, su centro de bienestar y salud de confianza. Nos complace mucho que haya elegido unirse a nuestra comunidad. Estamos aquí para brindarle el mejor servicio y apoyo en su camino hacia una vida más saludable y activa.</p>
     
         <p>En Esi Fitness, nos enorgullece ofrecer un ambiente de calidad y excelencia en cada aspecto de su experiencia con nosotros. Si tiene alguna pregunta, sugerencia o necesidad, no dude en ponerse en contacto con nosotros. Estamos aquí para ayudarle en su viaje hacia el bienestar.</p>
     
-        <p>Para comunicarse con nosotros, puede hacerlo a través del correo electrónico a la dirección: <a href="mailto:info@esifitnesmataro.com">info@esifitnesmataro.com</a>, o si lo prefiere, estamos disponibles por teléfono en el número: <a href="tel:+34989909551">649 909 551</a>. Estaremos encantados de atender sus consultas en cualquier momento.</p>
+        <p>Para comunicarse con nosotros, puede hacerlo a través del correo electrónico a la dirección: <a href="mailto:esifitnesmataro@gmail.com">esifitnesmataro@gmail.com</a>, o si lo prefiere, estamos disponibles por teléfono en el número: <a href="tel:+34989909551">649 909 551</a>. Estaremos encantados de atender sus consultas en cualquier momento.</p>
     
         <p>A continuación, le adjuntamos nuestras normas internas y nuestra política de protección de datos para su referencia. Le animamos a revisar estos documentos para comprender mejor nuestras políticas y compromisos con su seguridad y privacidad.</p>
        
-        <p>Agradecemos la confianza que ha depositado en nosotros y esperamos que su experiencia en Esi Fitness sea enriquecedora y satisfactoria.</p>
+        <p>Agradecemos la confianza que ha depositado en nosotros y esperamos que su experiencia en EsiFitness sea enriquecedora y satisfactoria.</p>
     
         <p>Siempre estamos trabajando para mejorar y ofrecer un servicio de alta calidad a nuestros miembros. Si tiene alguna sugerencia o comentario, no dude en compartirla con nosotros. Valoramos su opinión.</p>
     
-        <p>Una vez más, le damos la bienvenida a Esi Fitness y esperamos tener el placer de servirle pronto.</p>
+        <p>Una vez más, le damos la bienvenida a EsiFitness y esperamos tener el placer de servirle pronto.</p>
     
         <p>Atentamente,</p>
        
@@ -451,7 +451,7 @@ router.post('/correobienvenida', (req, res) => {
 
     const mailOptions = {
       from: 'Esifitnes Mataro <info@esifitnesmataro.com>',
-      to: destinatario,
+      to: Email,
       subject: 'Bienvenido/a a Esi Fitness',
       text: htmlToText(newContenido),
       html: newContenido,
