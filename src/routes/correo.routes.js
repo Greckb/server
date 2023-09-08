@@ -5,7 +5,7 @@ import { htmlToText, convert } from 'html-to-text';
 import fs from "fs";
 import { pool } from '../db.js'
 
-import dotenv from 'dotenv';
+
 import multer from "multer";
 import createDOMPurify from 'dompurify';
 
@@ -13,7 +13,6 @@ import { fileURLToPath, pathToFileURL } from 'url';
 import path from "path";
 
 
-dotenv.config(); // Cargar variables de entorno desde el archivo .env
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -24,26 +23,27 @@ const router = express.Router();
 
 // Configuración del transporte SMTP
 const transporter = nodemailer.createTransport({
-  host: process.env.HOST,
-  port: process.env.smtpPort,
+  host: 'com1004.raiolanetworks.es',
+  port: 465,
   secure: true,
   auth: {
-      user: process.env.USERNAME,
-      pass: process.env.PASSWORD,
+    user: 'info@esifitnesmataro.com',
+    pass: '0zOsXG5]eYbr',
   },
   logger: true,
   transactionLog: true, // include SMTP traffic in the logs
-  allowInternalNetworkInterfaces: false,
+  allowInternalNetworkInterfaces: false
 },
-{
-  // default message fields
+  {
+    // default message fields
 
-  // sender info
-  from: 'Info <info@esifitnesmataro.com>',
-  headers: {
+    // sender info
+    from: 'Info <info@esifitnesmataro.com>',
+    headers: {
       'X-Laziness-level': 1000 // just an example header, no need to use this
+    }
   }
-});
+);
 
 
 
