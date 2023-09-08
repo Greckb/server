@@ -122,7 +122,7 @@ const contenidoHTML = `
 //         path: 'https://www.esifitnesmataro.com/PROTECCION_DATOS.docx', // Nombre de archivo relativo a la carpeta 'public'
 //       },
 //     ];
-    
+
 //     let adjunto;
 //     if (req.file) {
 //       adjunto = {
@@ -151,7 +151,7 @@ const contenidoHTML = `
 //         return res.status(500).json({ message: 'Error al enviar el correo' });
 //       }
 
-      
+
 
 //       if (adjunto) {
 //         try {
@@ -180,7 +180,7 @@ router.post('/enviar-correo', (req, res) => {
 
     const { destinatario, asunto, contenido, cc, bcc } = req.body; // Agregar cc y bcc
 
-  
+
     let adjunto;
     if (req.file) {
       adjunto = {
@@ -209,7 +209,7 @@ router.post('/enviar-correo', (req, res) => {
         return res.status(500).json({ message: 'Error al enviar el correo' });
       }
 
-      
+
 
       if (adjunto) {
         try {
@@ -241,61 +241,46 @@ router.post('/contrasena', async (req, res) => {
     const contraseña = result[0][0].password;
     const nombre = result[0][0].Nombre
 
+
+    const recuperacontraseña = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Recuperación de Contraseña</title>
+    </head>
+    <body>
+        <table style="width: 100%; max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
+            <tr>
+                <td style="padding: 20px;">
+                    <p>Estimado <strong>${nombre}</strong>,</p>
+                    <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta (<strong>${email}</strong>). Si no realizaste esta solicitud, puedes ignorar este correo.</p>
+                    <p>Si deseas restablecer tu contraseña, puedes utilizar la siguiente información:</p>
+                    <ul>
+                        <li><strong>Contraseña temporal:</strong> <strong>${contraseña}</strong></li>
+                    </ul>
+                    <p>Te recomendamos cambiar tu contraseña temporal tan pronto como sea posible.</p>
+                    <p>Gracias,</p>
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>
+    
+    
+    
+          `
+
+  const newContenido = recuperacontraseña + contenidoHTML;
+
     // Configurar el correo electrónico
     const mailOptions = {
       from: 'Esifitness Mataro <info@esifitnesmataro.com>',
       to: email,
       subject: 'Recuperación de contraseña',
-      html: `
-<html>
-<head>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-    }
-    .bold {
-        font-weight: bold;
-    }
-    .page-break {
-        page-break-before: always;
-    }
-</style>
-</head>
-<body>
-<div class="page-break">
-<p>Estimado ${nombre},</p>
-          <br>
-          <p>Has olvidado tu contraseña?</p>
-          <p>Este es tu email: <strong>${email}</strong></p>
-          <p>y tu contraseña es...<strong>${contraseña}</strong></p>
-          <br><br>
-          <p><strong>Si no solicitaste la recuperación de la contraseña o tienes más problemas para iniciar sesión, por favor contacta con el soporte en <a href="mailto:info@esifitnesmataro.com">info@esifitnesmataro.com</a>.</strong></p>
-          <br><br>
-          </div>
-<div class="page-break">
-<img src="https://www.esifitnesmataro.com/_next/static/media/logo_esi.24fdf57a.png" alt="Logo de Esimataro" width="200">
-    <p>El Responsable del Tratamiento <span class="bold">OELAP TRAINING SL</span>, en cumplimiento del Reglamento General de Protección de Datos UE-2016/679, de la LOPD 3/2018, de garantía de los derechos digitales, y por la Directiva UE-2016/943 y la Ley 1/2019, de Secretos Empresariales, le informa que sus datos serán tratados para la gestión administrativa, contable, la prestación del servicio ofertado y el envío de información por <span class="bold">OELAP TRAINING SL</span>. No se cederán a terceros, salvo por obligación legal, pudiendo ejercer sus derechos de acceso, rectificación, supresión, oposición, portabilidad y limitación en <span class="bold">OELAP TRAINING SL</span>:</p>
-    <p><span class="bold">RONDA SANT OLEGUER, 73, LOCAL. 08304, MATARO (BARCELONA).</span> <a href="mailto:dpd@grupqualia.com">dpd@grupqualia.com</a>.</p>
-</div>
-
-<div class="page-break">
-    <p class="bold">AVISO DE CONFIDENCIALIDAD:</p>
-    <p>De conformidad con lo establecido en el Reglamento General -UE- 2016/679, la LOPD 3/2018, de garantía de los derechos digitales, la Ley 34/2002, de Servicios de la Sociedad de la Información y el Comercio Electrónico, la Ley 9/2014, General de Telecomunicaciones y la Ley 1/2019, de Secretos Empresariales, le informamos que sus datos son tratados con la finalidad de gestionar los servicios contratados y mandarle información de nuestra entidad, <span class="bold">OELAP TRAINING SL</span></p>
-</div>
-
-<div class="page-break">
-    <p>Este mensaje y sus archivos van dirigidos exclusivamente a su destinatario, pudiendo contener información confidencial sometida a secreto profesional. No está permitida su reproducción o distribución sin la autorización expresa de <span class="bold">OELAP TRAINING SL</span>. Si usted no es el destinatario final, por favor, elimínelo e infórmenos por esta vía.</p>
-    <p>Le informamos la posibilidad de ejercer los derechos de acceso, rectificación, oposición, supresión, limitación y portabilidad de sus datos ante <span class="bold">OELAP TRAINING SL</span>:</p>
-    <p><span class="bold">RONDA SANT OLEGUER, 73, LOCAL. 08304, MATARO (BARCELONA).</span> <a href="mailto:dpd@grupqualia.com">dpd@grupqualia.com</a></p>
-</div>
-
-<div class="page-break">
-    <p>Si usted no desea recibir nuestra información, póngase en contacto con nosotros enviando un correo electrónico a la siguiente dirección: <a href="mailto:esifitnesmataro@gmail.com">esifitnesmataro@gmail.com</a></p>
-</div>
-</body>
-</html>
-
-      `,
+      text: htmlToText(newContenido),
+      html: newContenido,
     };
 
 
@@ -397,10 +382,10 @@ router.post('/correobienvenida', (req, res) => {
       return res.status(500).json({ message: 'Error en el servidor' });
     }
 
-    const {  Nombre,  Email } = JSON.parse(req.body.data);
+    const { Nombre, Email } = JSON.parse(req.body.data);
 
-    
-    
+
+
     // Contenido del mensaje de bienvenida en HTML
     const contenidobienvenida = `
     <!DOCTYPE html>
@@ -464,7 +449,7 @@ router.post('/correobienvenida', (req, res) => {
         return res.status(500).json({ message: 'Error al enviar el correo' });
       }
 
-     
+
 
       res.status(200).json({ message: 'Correo enviado exitosamente' });
     });
