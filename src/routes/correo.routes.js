@@ -22,7 +22,28 @@ const router = express.Router();
 
 
 // Configuración del transporte SMTP
+const transporter = nodemailer.createTransport({
+  host: 'com1004.raiolanetworks.es',
+  port: 465,
+  secure: true,
+  auth: {
+    user: 'info@esifitnesmataro.com',
+    pass: '0zOsXG5]eYbr',
+  },
+  logger: true,
+  transactionLog: true, // include SMTP traffic in the logs
+  allowInternalNetworkInterfaces: false
+},
+  {
+    // default message fields
 
+    // sender info
+    from: 'Info <info@esifitnesmataro.com>',
+    headers: {
+      'X-Laziness-level': 1000 // just an example header, no need to use this
+    }
+  }
+);
 
 
 
@@ -431,7 +452,7 @@ router.post('/correobienvenida', (req, res) => {
     const mailOptions = {
       from: 'Esifitnes Mataro <info@esifitnesmataro.com>',
       to: Email,
-      subject: 'Bienvenido/a a Esi Fitness',
+      subject: 'Bienvenido/a a EsiFitness',
       text: htmlToText(newContenido),
       html: newContenido,
       attachments: adjuntos, // Agregar los archivos adjuntos aquí
