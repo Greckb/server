@@ -38,7 +38,7 @@ const transporter = nodemailer.createTransport({
     // default message fields
 
     // sender info
-    from: 'Info <info@esifitnesmataro.com>',
+    from: 'Esifitness Mataro <info@esifitnesmataro.com>',
     headers: {
       'X-Laziness-level': 1000 // just an example header, no need to use this
     }
@@ -192,7 +192,7 @@ router.post('/enviar-correo', (req, res) => {
     const newContenido = contenido + contenidoHTML;
 
     const mailOptions = {
-      from: 'Esifitnes Mataro <info@esifitnesmataro.com>',
+      from: 'Esifitness Mataro <info@esifitnesmataro.com>',
       to: destinatario,
       subject: asunto,
       text: htmlToText(newContenido),
@@ -243,7 +243,7 @@ router.post('/contrasena', async (req, res) => {
 
     // Configurar el correo electrónico
     const mailOptions = {
-      from: 'Esifitnes Mataro <info@esifitnesmataro.com>',
+      from: 'Esifitness Mataro <info@esifitnesmataro.com>',
       to: email,
       subject: 'Recuperación de contraseña',
       html: `
@@ -329,7 +329,7 @@ router.post('/enviar-correo-remesa', (req, res) => {
 
   // Configuración del correo
   const mailOptions = {
-    from: 'Esimataro <info@esifitnesmataro.com>',
+    from: 'Esifitness Mataro <info@esifitnesmataro.com>',
     to: destinatario,
     subject: asunto,
     text: contenido, // Usa el contenido convertido a texto plano
@@ -450,7 +450,7 @@ router.post('/correobienvenida', (req, res) => {
     const newContenido = contenidobienvenida + contenidoHTML;
 
     const mailOptions = {
-      from: 'Esifitnes Mataro <info@esifitnesmataro.com>',
+      from: 'Esifitness Mataro <info@esifitnesmataro.com>',
       to: Email,
       subject: 'Bienvenido/a a EsiFitness',
       text: htmlToText(newContenido),
