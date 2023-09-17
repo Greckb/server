@@ -22,28 +22,7 @@ const router = express.Router();
 
 
 // Configuración del transporte SMTP
-const transporter = nodemailer.createTransport({
-  host: 'com1004.raiolanetworks.es',
-  port: 465,
-  secure: true,
-  auth: {
-    user: 'info@esifitnesmataro.com',
-    pass: '0zOsXG5]eYbr',
-  },
-  logger: true,
-  transactionLog: true, // include SMTP traffic in the logs
-  allowInternalNetworkInterfaces: false
-},
-  {
-    // default message fields
 
-    // sender info
-    from: 'Esifitness Mataro <info@esifitnesmataro.com>',
-    headers: {
-      'X-Laziness-level': 1000 // just an example header, no need to use this
-    }
-  }
-);
 
 
 
