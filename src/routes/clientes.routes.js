@@ -27,10 +27,13 @@ router.get('/usuarios/:id', async (req, res) => {
     // Obtener el valor del parámetro "id"
     const clientId = req.params.id;
 
+    console.log(clientId)
 
     // Ejecutar la consulta y devolver los resultados
     const query = 'SELECT * FROM CLIENTES WHERE Idcliente = ?';
     const resp = await pool.query(query, [clientId]);
+
+   
 
     // Devolver los resultados de la consulta como JSON
     res.json(resp);

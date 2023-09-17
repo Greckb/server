@@ -321,9 +321,6 @@ router.post('/pagoefectivo', async (req, res) => {
       return res.status(405).json({ message: 'Ya existe una entrada para este cliente en el mismo mes en Factura_cliente.' });
     }
 
-
-
-
     // Insertar los nuevos valores en la tabla efectivo
     const insertQuery = 'INSERT INTO efectivo (fecha_pago, cliente_id , cuota) VALUES (?, ?, ?)';
     const valuesInsert = [fecha_pagado, cliente_id, cuota];
@@ -333,8 +330,9 @@ router.post('/pagoefectivo', async (req, res) => {
     // Actualizar los pagos del cliente
     const updateQuery = 'UPDATE CLIENTES SET UltimoPago = ?, ProximoPago = ? WHERE Idcliente = ?';
     const valoresUpdate = [UltimoPago, ProximoPago, cliente_id];
-    await pool.query(updateQuery, valoresUpdate);
+    const update = await pool.query(updateQuery, valoresUpdate);
 
+    
     // Enviar una respuesta al cliente
     res.status(200).json({ message: 'Datos recibidos correctamente' });
   } catch (error) {

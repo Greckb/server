@@ -21,7 +21,29 @@ const DOMPurify = createDOMPurify();
 const router = express.Router();
 
 
+// Configuración del transporte SMTP
+const transporter = nodemailer.createTransport({
+  host: 'com1004.raiolanetworks.es',
+  port: 465,
+  secure: true,
+  auth: {
+    user: 'info@esifitnesmataro.com',
+    pass: '0zOsXG5]eYbr',
+  },
+  logger: true,
+  transactionLog: true, // include SMTP traffic in the logs
+  allowInternalNetworkInterfaces: false
+},
+  {
+    // default message fields
 
+    // sender info
+    from: 'Esifitness Mataro <info@esifitnesmataro.com>',
+    headers: {
+      'X-Laziness-level': 1000 // just an example header, no need to use this
+    }
+  }
+);
 
 
 
@@ -109,6 +131,8 @@ router.post('/enviar-correo', (req, res) => {
       cc: cc ? cc.split(',') : [], // Agregar CC
       bcc: bcc ? bcc.split(',') : [], // Agregar BCC
     };
+
+    
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
@@ -282,17 +306,9 @@ router.get('/nombre-de-emails', async (req, res) => {
 
 
 router.post('/correobienvenida', (req, res) => {
-  upload(req, res, (err) => {
-    if (err instanceof multer.MulterError) {
-      return res.status(500).json({ message: 'Error al adjuntar el archivo' });
-    } else if (err) {
-      return res.status(500).json({ message: 'Error en el servidor' });
-    }
-
-    const { Nombre, Email } = JSON.parse(req.body.data);
-
-
-
+ try{
+    const {Nombre, Email} = req.body // Accede al objeto JSON enviado en el cuerpo de la solicitud
+   
     // Contenido del mensaje de bienvenida en HTML
     const contenidobienvenida = `
     <!DOCTYPE html>
@@ -356,11 +372,13 @@ router.post('/correobienvenida', (req, res) => {
         return res.status(500).json({ message: 'Error al enviar el correo' });
       }
 
-
-
       res.status(200).json({ message: 'Correo enviado exitosamente' });
     });
-  });
+   } catch (error) {
+      
+      res.status(500).json({ message: 'Error al enviar el Mail de Bienvenida' });
+    }
+
 });
 
 
