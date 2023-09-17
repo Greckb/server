@@ -128,7 +128,7 @@ router.put('/estado/:id', fileupload, async (req, res, next) => {
 );
 
 //Añadir un Cliente a la DB
-router.post('/addCliente', fileupload, generatePdfMiddleware, async (req, res) => {
+router.post('/addCliente', fileupload,  async (req, res) => {
   try {
     // Si hay archivo de imagen, procesa la imagen
     let imgArchivada = null;
@@ -140,11 +140,11 @@ router.post('/addCliente', fileupload, generatePdfMiddleware, async (req, res) =
 
     // Si hay archivo PDF generado, procesa el PDF
     let pdfArchivado = null;
-    if (req.PDF) {
-      pdfArchivado = fs.readFileSync(`${__dirname}/../uploads/${req.PDF.filename}`);
-      // Eliminar el PDF generado del servidor
-      fs.unlinkSync(`${__dirname}/../uploads/${req.PDF.filename}`);
-    }
+    // if (req.PDF) {
+    //   pdfArchivado = fs.readFileSync(`${__dirname}/../uploads/${req.PDF.filename}`);
+    //   // Eliminar el PDF generado del servidor
+    //   fs.unlinkSync(`${__dirname}/../uploads/${req.PDF.filename}`);
+    // }
 
 
     const Fechafreeze = req.body.data.Fechafreeze || '0000-00-00';
