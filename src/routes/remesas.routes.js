@@ -360,16 +360,12 @@ router.get('/efectivo', async (req, res) => {
       totalCuota: row.totalCuota,
       cantidadRegistros: row.cantidadRegistros,
     }));
-
        res.status(200).json(monthlyData);
   } catch (error) {
     console.error('Error interno del servidor:', error);
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 });
-
-
-
 
 
 function generarXML(transactions, datos) {
@@ -506,8 +502,6 @@ function generarXML(transactions, datos) {
 
   return xml
 }
-
-
 
 export default router
 
