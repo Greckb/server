@@ -104,6 +104,8 @@ router.get('/remesas/:id', async (req, res) => {
 //Traer las Remesas al listado
 router.get('/remesas', async (req, res) => {
   try {
+
+
     const result = await pool.query('SELECT * FROM Remesas')
     res.json(result[0])
   } catch (error) {
@@ -290,7 +292,6 @@ router.get('/cliente/:id', async (req, res) => {
 });
 
 
-
 // Ruta POST para manejar el pago efectivo
 router.post('/pagoefectivo', async (req, res) => {
   try {
@@ -332,7 +333,7 @@ router.post('/pagoefectivo', async (req, res) => {
     const valoresUpdate = [UltimoPago, ProximoPago, cliente_id];
     const update = await pool.query(updateQuery, valoresUpdate);
 
-    
+
     // Enviar una respuesta al cliente
     res.status(200).json({ message: 'Datos recibidos correctamente' });
   } catch (error) {
@@ -340,6 +341,35 @@ router.post('/pagoefectivo', async (req, res) => {
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 });
+
+router.get('/efectivo', async (req, res) => {
+  try {
+    // Consulta para obtener los datos de efectivo, incluyendo la cantidad de registros por mes
+    const efectivoQuery = `
+      SELECT DATE_FORMAT(fecha_pago, '%Y-%m') AS mes, SUM(cuota) AS totalCuota, COUNT(*) AS cantidadRegistros
+      FROM efectivo
+      GROUP BY mes
+      ORDER BY mes;
+    `;
+
+    const [efectivoRows] = await pool.query(efectivoQuery);
+
+    // Crear un array para almacenar los resultados por mes
+    const monthlyData = efectivoRows.map((row) => ({
+      mes: row.mes,
+      totalCuota: row.totalCuota,
+      cantidadRegistros: row.cantidadRegistros,
+    }));
+
+       res.status(200).json(monthlyData);
+  } catch (error) {
+    console.error('Error interno del servidor:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+});
+
+
+
 
 
 function generarXML(transactions, datos) {
