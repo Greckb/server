@@ -143,13 +143,18 @@ router.get('/factura/:id', async (req, res) => {
     //   // // Crear un objeto combinado sin etiquetas si efectivoRows no está vacío
     if (efectivoRows.length > 0) {
       efectivoRows.forEach((e) => {
-        e.pagado = 'P.Efectivo'; // Agrega la columna "pago" con valor "P.Efectivo" a efectivos
+        e.pagado = 'P.Adalantado'; // Agrega la columna "pago" con valor "P.Efectivo" a efectivos
       });
 
       result[0].forEach((e) => {
         e.pagado = 'D.Bancaria'; // Agrega la columna "pago" con valor "P.Efectivo" a efectivos
       });
       combinedData = [...result[0], ...efectivoRows];
+    }else{
+      result[0].forEach((e) => {
+        e.pagado = 'D.Bancaria'; // Agrega la columna "pago" con valor "P.Efectivo" a efectivos
+      });
+      combinedData = [...result[0]];
     }
 
 
