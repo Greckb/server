@@ -14,6 +14,7 @@ const __dirname = path.dirname(__filename);
 router.get('/usuarios', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM CLIENTES')
+    
 
     res.json(result)
   } catch (error) {
@@ -102,13 +103,13 @@ router.put('/estado/:id', fileupload, async (req, res, next) => {
 
   const clientId = req.params.id;
   const data = JSON.parse(req.body.data)
-  const { Fechafreeze, Estado } = data;
+  const { Fechafreeze, Estado, UltimoPago, ProximoPago } = data;
 
   try {
 
     // Actualizar los datos del cliente en la base de datos
-    const updateQuery = 'UPDATE CLIENTES SET  Estado = ?, Fechafreeze = ? WHERE Idcliente = ?';
-    const updateValues = [Estado, Fechafreeze, clientId];
+    const updateQuery = 'UPDATE CLIENTES SET  Estado = ?, Fechafreeze = ?, UltimoPago = ?, ProximoPago = ? WHERE Idcliente = ?';
+    const updateValues = [Estado, Fechafreeze, UltimoPago, ProximoPago, clientId];
 
     const update = await pool.query(updateQuery, updateValues);
 
@@ -210,7 +211,23 @@ router.get('/estadisticas', async (req, res) => {
     const porcentajeActivos = Math.round((activos.length / result[0].length) * 100);
     const porcentajeInactivos = Math.round((inactivos.length / result[0].length) * 100);
 
+    const query = 'SELECT MONTH(fecha_creacion) AS Mes FROM Remesas ORDER BY fecha_creacion DESC LIMIT 1';
 
+    const remesa = await pool.query(query);
+
+    const meses = [
+      'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+      'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+    ];
+
+    const fechaActual = new Date(); // Obtener la fecha actual
+    const añoActual = fechaActual.getFullYear(); // Obtener el año actual
+
+    const mesActual = meses[remesa[0][0].Mes + 1]; // Obtener el nombre del mes
+
+    const fechaCompleta = `${mesActual} ${añoActual}`; // Combinar mes y año
+
+    
     const cardStatsData = {
       statsHorizontal: [
         {
@@ -322,9 +339,11 @@ router.get('/estadisticas', async (req, res) => {
           chipText: 'Last Month',
           src: '/images/cards/pose_m35.png'
         }
-      ]
+      ],
+      fechaCompleta
     }
 
+    
     res.status(200).send(cardStatsData);
     return
   } catch (error) {
@@ -332,21 +351,40 @@ router.get('/estadisticas', async (req, res) => {
     res.status(500).json({ message: 'Error al buscar el cliente' });
   }
 
-
-
 });
 
+// router.get('/mespago', async (req, res) => {
 
+//   try {
+//     // Consulta para obtener el mes de la última posición en fecha_creacion
+//     const query = 'SELECT MONTH(fecha_creacion) AS Mes FROM Remesas ORDER BY fecha_creacion DESC LIMIT 1';
 
+//     const remesa = await pool.query(query);
 
+//     const meses = [
+//       'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+//       'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+//     ];
 
+//     const fechaActual = new Date(); // Obtener la fecha actual
+//     const añoActual = fechaActual.getFullYear(); // Obtener el año actual
 
+//     const mesActual = meses[remesa[0][0].Mes + 1]; // Obtener el nombre del mes
 
+//     const fechaCompleta = `${mesActual} ${añoActual}`; // Combinar mes y año
 
+//     console.log(fechaCompleta)
 
+//     if (remesa.length > 0) {
+//       res.json(fechaCompleta);
+//     } else {
+//       res.json({ fechaCompleta: null });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ message: 'Error al buscar el mes de la última posición en fecha_creacion' });
+//   }
 
-
-
+// });
 
 export default router
 

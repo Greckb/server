@@ -150,7 +150,7 @@ router.get('/factura/:id', async (req, res) => {
         e.pagado = 'D.Bancaria'; // Agrega la columna "pago" con valor "P.Efectivo" a efectivos
       });
       combinedData = [...result[0], ...efectivoRows];
-    }else{
+    } else {
       result[0].forEach((e) => {
         e.pagado = 'D.Bancaria'; // Agrega la columna "pago" con valor "P.Efectivo" a efectivos
       });
@@ -165,32 +165,74 @@ router.get('/factura/:id', async (req, res) => {
   }
 });
 
+//Crear las remesas de este mes
 router.post('/remesas', async (req, res) => {
-  const idClientes = req.body;
-  const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
   try {
-    const ids = idClientes.map(id => `'${id}'`).join(',');
 
-    const query = `SELECT IdCliente, Nombre, Plan, Cuota, CuotaMensual, UltimoPago, ProximoPago FROM CLIENTES WHERE IdCliente IN (${ids})`;
-    const [rows, fields] = await pool.query(query);
+    const idClientes = req.body;
+
+    // Recoge los valores específicos de cada objeto en el array
+    const resultados = idClientes.map(cliente => ({
+      IdCliente: cliente.IdCliente, // Corregir a Idcliente (con minúscula)
+      Nombre: cliente.Nombre,
+      Plan: cliente.Plan,
+      Cuota: cliente.Cuota,
+      CuotaMensual: cliente.CuotaMensual,
+      UltimoPago: cliente.UltimoPago,
+      ProximoPago: cliente.ProximoPago,
+    }));
+
+    // Supongamos que tienes la cadena original
+    const cadenaOriginal = resultados[0].ProximoPago;
+
+    // Formatea la cadena resultante
+    const nuevaCadena = `1 ${cadenaOriginal}`;
+
+    const partes = nuevaCadena.split(" "); // Separa la cadena en partes
+
+    const dia = partes[0]; // Obtiene el día
+    const mes = partes[1].toLowerCase(); // Obtiene el mes en minúsculas
+    const año = partes[2]; // Obtiene el año
+
+    // Objeto para mapear el nombre del mes a su número
+    const meses = {
+      enero: 1,
+      febrero: 2,
+      marzo: 3,
+      abril: 4,
+      mayo: 5,
+      junio: 6,
+      julio: 7,
+      agosto: 8,
+      septiembre: 9,
+      octubre: 10,
+      noviembre: 11,
+      diciembre: 12
+    };
+
+    // Convierte el nombre del mes a número
+    const numeroMes = meses[mes];
+
+    // Formatea la fecha en el formato deseado (YYYY-MM-D)
+    const fechaFormateada = `${año}-${numeroMes}-${dia}`;
 
 
     // Obtener el valor máximo actual de id en la tabla Factura_cliente
     const [[{ maxId }]] = await pool.query('SELECT MAX(id) AS maxId FROM Factura_cliente');
 
-
     // Crear un array con los nuevos valores a insertar
-    const newValues = rows.map(({ IdCliente, CuotaMensual }) => {
+    const newValues = resultados.map(({ IdCliente, CuotaMensual }) => {
       return [
         maxId + 1, // Nuevo valor de id
-        new Date().toISOString().slice(0, 10), // Fecha de hoy
+        fechaFormateada, // Fecha de hoy
         IdCliente,
         CuotaMensual,
       ];
     });
 
-    // Insertar los nuevos valores en la tabla Factura_cliente
+
+    // // Insertar los nuevos valores en la tabla Factura_cliente
     const insertQuery = 'INSERT INTO Factura_cliente (id, fecha_pago, cliente_id, cuota) VALUES ?';
     await pool.query(insertQuery, [newValues]);
 
@@ -199,19 +241,21 @@ router.post('/remesas', async (req, res) => {
     const newValues2 = [
       [
         maxId + 1, // Nuevo valor de factura_id
-        new Date().toISOString().slice(0, 10), // Fecha de hoy
+        fechaFormateada,
         maxId + 1, // Nuevo valor de factura_id
-        rows.reduce((total, { CuotaMensual }) => total + CuotaMensual, 0), // Suma de las cuotas mensuales
-        rows.length, // Número de clientes
+        resultados.reduce((total, { CuotaMensual }) => total + CuotaMensual, 0), // Suma de las cuotas mensuales
+        resultados.length, // Número de clientes
       ],
     ];
+
+
 
     // Insertar los nuevos valores en la tabla Remesas
     const insertQuery2 = 'INSERT INTO Remesas (id, fecha_creacion, factura_id, cuota, num_clientes) VALUES ?';
     await pool.query(insertQuery2, [newValues2]);
 
     // Actualizar los valores de UltimoPago y ProximoPago en la tabla CLIENTES
-    const updatedRows = rows.map(({ IdCliente, UltimoPago, ProximoPago, Plan }) => {
+    const updatedRows = resultados.map(({ IdCliente, UltimoPago, ProximoPago, Plan }) => {
       let newUltimoPago = ProximoPago; // Valor anterior de ProximoPago
       let newProximoPago = ProximoPago; // Valor anterior de ProximoPago
 
@@ -219,13 +263,13 @@ router.post('/remesas', async (req, res) => {
         newProximoPago = addTimeToDate(ProximoPago, 'month', 1);
       } else if (Plan === 'Trimestral') {
         newProximoPago = addTimeToDate(ProximoPago, 'quarter', 1);
-      } else if (Plan === 'Anual') {
-        newProximoPago = addTimeToDate(ProximoPago, 'year', 1);
+      } else if (Plan === 'Semestral') {
+        newProximoPago = addTimeToDate(ProximoPago, 'month', 6); // Cambiar de 'year' a 'month' y sumar 6 meses
       }
+
 
       return `UPDATE CLIENTES SET UltimoPago='${newUltimoPago}', ProximoPago='${newProximoPago}' WHERE IdCliente='${IdCliente}'`;
     });
-
 
 
     for (const updateQuery of updatedRows) {
@@ -272,7 +316,7 @@ router.get('/cliente/:id', async (req, res) => {
         row.pagado = 'D.Bancaria'; // Agrega la columna "pago" con valor "D.Bancaria" a rows
       });
       efetivos.forEach((e) => {
-        e.pagado = 'P.Efectivo'; // Agrega la columna "pago" con valor "P.Efectivo" a efectivos
+        e.pagado = 'P.Adelantado'; // Agrega la columna "pago" con valor "P.Efectivo" a efectivos
       });
       combinedData = [...rows, ...efetivos];
     } else if (rows.length > 0 && efetivos == 0) {
@@ -282,7 +326,7 @@ router.get('/cliente/:id', async (req, res) => {
       combinedData = rows;
     } else if (efetivos.length > 0 && rows == 0) {
       efetivos.forEach((e) => {
-        e.pagado = 'P.Efectivo'; // Agrega la columna "pago" con valor "P.Efectivo" a efectivos
+        e.pagado = 'P.Adelantado'; // Agrega la columna "pago" con valor "P.Efectivo" a efectivos
       });
       combinedData = efetivos;
     }
@@ -311,6 +355,7 @@ router.post('/pagoefectivo', async (req, res) => {
 
     const [existingEntry] = await pool.query(checkQuery, valuesCheck);
 
+
     // Si ya existe una entrada, maneja el error
     if (existingEntry.length > 0) {
       return res.status(400).json({ message: 'Ya existe una entrada para este cliente en el mismo mes.' });
@@ -321,6 +366,7 @@ router.post('/pagoefectivo', async (req, res) => {
     const facturaValuesCheck = [cliente_id, fecha.getMonth(), fecha.getFullYear()];
 
     const [existingFacturaEntry] = await pool.query(facturaCheckQuery, facturaValuesCheck);
+
 
     // Si ya existe una entrada en Factura_cliente, maneja el error
     if (existingFacturaEntry.length > 0) {
@@ -365,7 +411,7 @@ router.get('/efectivo', async (req, res) => {
       totalCuota: row.totalCuota,
       cantidadRegistros: row.cantidadRegistros,
     }));
-       res.status(200).json(monthlyData);
+    res.status(200).json(monthlyData);
   } catch (error) {
     console.error('Error interno del servidor:', error);
     res.status(500).json({ message: 'Error interno del servidor' });
